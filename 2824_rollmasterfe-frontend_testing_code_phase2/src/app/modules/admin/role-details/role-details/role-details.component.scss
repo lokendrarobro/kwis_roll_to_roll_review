@@ -1,0 +1,94 @@
+.ng-dropdown-panel .ng-option-marked {
+    display: none !important;
+  }
+  .m-heightVH{
+    max-height: calc(100vh - 19.5rem);
+  }
+  .demo-chart {
+    height: 400px;
+  }
+  .chart-container {
+    display: flex;
+  }
+
+  .list-container {
+    margin-block: auto;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+
+  .chart {
+    height: 400px;
+  }
+  .loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #030303cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .loader-logo {
+    max-width: 50%; 
+    max-height: 50%;
+    margin:0 auto;
+  }
+  .loader-text {
+    position: absolute;
+    top: calc(20% + 230px);
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 30px;
+  }
+  ::ng-deep table.dataTable td.dataTables_empty {
+    display: none;
+}
+.pre-line {
+  white-space: pre-line;
+}
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+.Edit-icon{
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+    &:hover {
+        // background-color: #cce4ff;
+        box-shadow: 0 0 10px rgba(2, 255, 255, 0.137);
+        transform: scale(1.05);
+    }
+    img {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+.axis-wrapper {
+  position: relative;
+  width: 60px;          /* FIXED WIDTH */
+  min-width: 60px;
+  height: 180px;        /* arrow height ke according */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.axis-arrow {
+  height: 50%;
+}
+
+.axis-text {
+  position: absolute;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  text-align: center;
+}

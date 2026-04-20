@@ -1,0 +1,2549 @@
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg py-6 sm:py-6 px-2 w-full Body-height">
+  <div class="grid grid-cols-1 md:grid-cols-4">
+    <div class="px-2 mb-3">
+      <div class="flex flex-col w-full rounded-lg gap-2 border-b">
+        <button (click)="setActiveTab('customer-config')" [ngClass]="{
+            'text-black bg-brandColor font-bold':
+              activeTab === 'customer-config',
+            'bg-[#e6effb] text-black font-medium':
+              activeTab !== 'customer-config'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'customer-config'
+                ? 'assets/icons/tags-solid.svg'
+                : 'assets/icons/tags-solid-dark.svg'
+            " alt="" class="mr-2 w-10" />
+          {{ 'tags' | transloco }}
+        </button>
+
+        <button (click)="setActiveTab('module-visibility')" [ngClass]="{
+            'text-black bg-brandColor font-bold':
+              activeTab === 'module-visibility',
+            'bg-[#e6effb] text-black font-medium':
+              activeTab !== 'module-visibility'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'module-visibility'
+                ? 'assets/icons/icon-2.svg'
+                : 'assets/icons/module.svg'
+            " alt="" class="mr-2 w-8" />
+          {{ 'module_visibility' | transloco }}
+        </button>
+
+        <button (click)="setActiveTab('pdf-generation')" [ngClass]="{
+            'text-black bg-brandColor font-bold':
+              activeTab === 'pdf-generation',
+            'bg-[#e6effb] text-black font-medium':
+              activeTab !== 'pdf-generation'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'pdf-generation'
+                ? 'assets/icons/icon-3.svg'
+                : 'assets/icons/document.svg'
+            " alt="" class="mr-2 w-8" />
+          {{ 'report_config' | transloco }}
+        </button>
+
+        <button (click)="setActiveTab('quality-code')" [ngClass]="{
+            'text-black bg-brandColor font-bold': activeTab === 'quality-code',
+            'bg-[#e6effb] text-black font-medium': activeTab !== 'quality-code'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'quality-code'
+                ? 'assets/icons/icon-4.svg'
+                : 'assets/icons/tab-filter.svg'
+            " alt="" class="mr-2 w-8" />
+          {{ 'quality_code_config' | transloco }}
+        </button>
+        <button (click)="setActiveTab('config')" [ngClass]="{
+            'text-black bg-brandColor font-bold': activeTab === 'config',
+            'bg-[#e6effb] text-black font-medium': activeTab !== 'config'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'config'
+                ? 'assets/icons/icon-config-active.svg'
+                : 'assets/icons/icon-config.svg'
+            " alt="" class="mr-2 w-8" />
+          {{ 'machine_config' | transloco }}
+        </button>
+       <button (click)="setActiveTab('critical-defect-configuration')" [ngClass]="{
+            'text-black bg-brandColor font-bold': activeTab === 'critical-defect-configuration',
+            'bg-[#e6effb] text-black font-medium': activeTab !== 'critical-defect-configuration'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'critical-defect-configuration'
+                ? 'assets/icons/icon-4.svg'
+                : 'assets/icons/tab-filter.svg'
+            " alt="" class="mr-2 w-8" />
+          {{ 'critical_defect_config' | transloco }}
+        </button>
+        <button (click)="setActiveTab('defect-grading-config')" [ngClass]="{
+            'text-black bg-brandColor font-bold': activeTab === 'defect-grading-config',
+            'bg-[#e6effb] text-black font-medium': activeTab !== 'defect-grading-config'
+          }" class="w-full flex items-center px-5 py-2 rounded-lg transition-shadow hover:shadow-lg h-15">
+          <img [src]="
+              activeTab === 'defect-grading-config'
+                ? 'assets/icons/icon-4.svg'
+                : 'assets/icons/tab-filter.svg'
+            " alt="" class="mr-2 w-8" />
+          {{ 'defect_grading_config' | transloco }}
+        </button>
+      </div>
+    </div>
+    <div class="col-span-3">
+      <!-- Tab Content -->
+      <div class="bg-card shadow-md sm:rounded-lg">
+        <div *ngIf="activeTab === 'customer-config'">
+          <div class="flex justify-between items-center text-xl font-semibold rounded-lg mb-1 p-2 px-3">
+            <h3></h3>
+
+            <div class="flex items-center gap-2">
+              <input [(ngModel)]="newTagName" type="text" class="p-2 border border-gray-300 rounded-lg text-base"
+                [placeholder]="'enter_tag_name' | transloco" (keydown.space)="preventSpace($event)" />
+              <button type="button" [alt]="editMode ? 'Update Tag' : 'Add Tag'"
+                (click)="editMode ? updateUserTag() : addUserTag()"
+                class="text-white bg-brandColor font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center hover:shadow-md transition">
+                <mat-icon [svgIcon]="
+                    editMode ? 'heroicons_solid:pencil' : 'heroicons_solid:plus'
+                  " class="text-white"></mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-3">
+            <div class="w-full">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                <div *ngFor="let tag of userTags; let i = index"
+                  class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all">
+                  <div class="flex items-center gap-2">
+                    <img class="w-6" src="assets/icons/tag-solid.svg" alt="" />
+                    <span class="text-black text-sm font-normal w-1/2 md:w-10/12">
+                      {{ tag.tag_name }}</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <button *ngIf="deleteCustomUserTagStatus" (click)="openDeleteModal(tag.user_tag_id)"
+                      [disabled]="tag.status === 1" class="Delete-icon">
+                      <img src="assets/icons/Trash.svg" alt="" />
+                    </button>
+                    <button *ngIf="editCustomUserTagStatus" (click)="editUserTag(tag)" class="Edit-icon">
+                      <img src="assets/icons/Edit.svg" alt="" />
+                    </button>
+                  </div>
+                </div>
+                <div *ngIf="userTags.length == 0" class="col-span-2">
+                  <div class="text-red-600 text-center py-2 text-lg">
+                    {{ 'no_tags_found' | transloco }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'module-visibility'">
+          <div class="flex justify-between items-center text-xl font-semibold rounded-lg mb-1 p-2 px-3">
+            <select *ngIf="loggedInRole == '1'" [(ngModel)]="selectedLanguage" (ngModelChange)="saveLanguageSettings($event)"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/6 px-1 py-2 mb-1 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 appearance-none ml-[680px]">
+              <option *ngFor="let lang of languages" [value]="lang">
+                {{ lang }}
+              </option>
+            </select>
+            <span *ngIf="loggedInRole != '1'"></span>
+            <select id="countries" [(ngModel)]="selectedRole" (ngModelChange)="setCheckedModulesForRole(selectedRole)"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/6 px-1 py-2 mb-1 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 appearance-none">
+              <!-- <option value="" selected>{{ 'select_role' | transloco }}</option> -->
+              <option [value]="role.role_id" *ngFor="let role of roles">
+                {{ role.role_name | titlecase }}
+              </option>
+            </select>
+          </div>
+
+          <div class="p-3">
+            <!-- <div class="w-full border-b border-gray-200 pb-2">
+              <label
+                class="block text-black text-sm font-bold mb-1"
+                for="username"
+              >
+                {{ 'select_role' | transloco }}
+              </label>
+              <div class="relative w-full md:w-1/5">
+                <select
+                  id="countries"
+                  [(ngModel)]="selectedRole"
+                  (ngModelChange)="setCheckedModulesForRole(selectedRole)"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-1 py-2 mb-1 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 appearance-none"
+                >
+                  <option [value]="role.role_id" *ngFor="let role of roles">
+                    {{ role.role_name | titlecase }}
+                  </option>
+                </select>
+                <div
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+                >
+                  <svg
+                    class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+            </div> -->
+            <div class="grid grid-cols-1 md:grid-cols-3 pt-2 gap-3">
+              <ng-container *ngFor="let module of modules">
+                <div *ngIf="selectedRole != 1 || module.module_name != 'setting'"
+                  class="flex justify-between border border-gray-200 rounded-md shadow hover:shadow-lg p-2">
+                  <div class="flex gap-2 items-center">
+                    <span><mat-icon class="w-10 h-10">{{
+                        module.icon
+                        }}</mat-icon></span>
+                    <span class="basis-2/3 text-black text-base font-semibold">
+                      {{ module.module_name | titlecase }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input [checked]="checkedModules[module.module_id]" (change)="
+                          onCheckboxChange(
+                            $event,
+                            module.module_id,
+                            this.selectedRole
+                          )
+                        " type="checkbox" value="" class="sr-only peer" />
+                      <div
+                        class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                      </div>
+                    </label>
+                    <button [disabled]="!checkedModules[module.module_id]" (click)="
+                        getFeatures(module.module_id);
+                        openEditmodal(module.module_name)
+                      " class="Edit-icon">
+                      <img src="assets/icons/Edit.svg" alt="" />
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <div class="w-full items-end border-b pb-2">
+            <div class="mb-2">
+              <!-- Checkboxes for Inspection, Review, Repair, and Module -->
+              <div class="flex justify-between items-center">
+                <div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'pdf-generation'">
+          <div class="flex flex-wrap items-center justify-between w-full p-2 pb-0">
+            <!-- Tabs Section -->
+            <div class="flex w-full md:w-auto gap-2">
+              <button class="px-5 py-2 rounded-lg font-medium border shadow transition-all duration-200" [ngClass]="
+                  selectedReportTab === 'roll'
+                    ? 'bg-brandColor text-white border-transparent hover:bg-gray-800'
+                    : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
+                " (click)="selectedReportTab = 'roll'">
+                {{ 'roll_report' | transloco }}
+              </button>
+
+              <button class="px-5 py-2 rounded-lg font-medium border shadow transition-all duration-200" [ngClass]="
+                  selectedReportTab === 'production'
+                    ? 'bg-brandColor text-white border-transparent hover:bg-gray-800'
+                    : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
+                " (click)="selectedReportTab = 'production'">
+                {{ 'production_report' | transloco }}
+              </button>
+            </div>
+
+            <!-- Right-side Add/Update Button -->
+            <button *ngIf="addPdfGenerationConfigStatus && selectedReportTab === 'roll' && !showPdfList" type="button" (click)="togglePdfView('add')" [ngClass]="'rounded-full w-11 h-11 flex items-center justify-center text-3xl'"
+              class="text-white bg-brandColor font-medium text-sm text-center inline-flex items-center hover:shadow-md transition">
+              +
+            </button>
+
+            <!-- <div *ngIf="selectedReportTab === 'roll' && showPdfList"
+              class="flex items-center border rounded-lg  overflow-hidden">
+            
+              <label class="flex items-center gap-2 px-4 py-2 cursor-pointer text-black">
+                <input type="radio" name="sharingMode" value="email" [(ngModel)]="sharingMode" class="accent-lightblue" />
+                Email
+              </label>
+            
+              <div class="w-px h-6 bg-black opacity-60"></div>
+            
+              <label class="flex items-center gap-2 px-4 py-2 cursor-pointer text-black">
+                <input type="radio" name="sharingMode" value="sms" [(ngModel)]="sharingMode" class="accent-lightblue" />
+                SMS
+              </label>
+            
+            </div> -->
+
+            <button *ngIf="addProductionReportConfigStatus && selectedReportTab === 'production' && !showPdfList" type="button" (click)="togglePdfView('add')" [ngClass]="'rounded-full w-11 h-11 flex items-center justify-center text-3xl'"
+              class="text-white bg-brandColor font-medium text-sm text-center inline-flex items-center hover:shadow-md transition">
+              +
+            </button>
+
+
+          </div>
+
+          <!-- Tabs Container -->
+          <div>
+            <div *ngIf="selectedReportTab === 'roll'" class="">
+              <div *ngIf="!showPdfList" class="p-3">
+                <div class="w-full">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <div *ngFor="let getAllpdfList of getAllPdfLists" [class.bg-green-100]="getAllpdfList.status === 1"
+                      [class.cursor-not-allowed]="
+                        getAllpdfList.isdisabled === 1
+                      "
+                      class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all cursor-pointer"
+                      [class.opacity-50]="getAllpdfList.isdisabled === 1" [class.pointer-events-none]="
+                        getAllpdfList.isdisabled === 1
+                      ">
+                      <div class="flex items-center gap-2">
+                        <input [checked]="getAllpdfList.status === 1" type="checkbox" (click)="
+                            updateStatusForPdfConfig(getAllpdfList.id, $event)
+                          " [disabled]="getAllpdfList.isdisabled === 1" class="mr-2" />
+                        <img class="w-6" src="assets/icons/PDF.svg" alt="" />
+                        <span class="text-black text-sm font-normal w-1/2 md:w-10/12">
+                          {{ getAllpdfList.pdf_config_name }}
+                        </span>
+                      </div>
+
+                      <div class="flex items-center gap-3">
+                        <button *ngIf="deletePdfGenerationStatus" (click)="
+                            openDeleteModalforPdf(getAllpdfList.id);
+                            $event.stopPropagation()
+                          " [disabled]="getAllpdfList.isdisabled === 1" class="Delete-icon">
+                          <img src="assets/icons/Trash.svg" alt="" />
+                        </button>
+                        <button *ngIf="editPdfGenerationStatus" (click)="
+                            pdfConfigEdit(getAllpdfList);
+                            $event.stopPropagation()
+                          " [disabled]="getAllpdfList.isdisabled === 1" class="Edit-icon">
+                          <img src="assets/icons/Edit.svg" alt="" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div *ngIf="getAllPdfLists.length == 0" class="col-span-2">
+                      <div class="text-red-600 text-center py-2 text-lg">
+                        {{ 'no_pdf_found' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="showPdfList" class="p-3">
+                <form [formGroup]="pdfAddEditForm">
+                  <div class="w-full">
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-3 py-2 border-b border-gray-200">
+                      <div>
+                        <div class="mb-2">
+                          <label class="block text-black text-sm font-bold mb-1" for="username">
+                            {{ 'config_name' | transloco }}
+                          </label>
+
+                          <input type="text" class="w-full p-2 border border-gray-200 rounded-lg"
+                            [placeholder]="'enter_config_name' | transloco" formControlName="configName" PDF Generation Config Name
+                            (keydown.space)="preventSpace($event)" />
+                          <div *ngIf="
+                              pdfAddEditForm.get('configName')?.invalid &&
+                              (pdfAddEditForm.get('configName')?.dirty ||
+                                pdfAddEditForm.get('configName')?.touched)
+                            " class="text-red-500 text-sm">
+                            <span *ngIf="pdfAddEditForm.get('configName')?.errors?.['required']">Config name is
+                              {{ 'config_name_required' | transloco }}</span>
+                            <span *ngIf="pdfAddEditForm.get('configName')?.errors?.['pattern']">Special characters are
+                              {{ 'special_characters_not_allowed' | transloco }}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label class="block text-black text-sm font-bold mb-1" for="username">
+                            {{ 'logo' | transloco }}
+                          </label>
+                          <input type="file" class="w-full border border-gray-200 rounded-lg"
+                            (change)="onFileSelected($event)" formControlName="logoImage"
+                            accept="image/png, image/jpeg" />
+                        </div>
+                        <div *ngIf="
+                            pdfAddEditForm.get('logoImage')?.errors?.invalidType
+                          " class="text-red-500 text-sm">
+                          {{ 'only_png_jpg_allowed' | transloco }}
+                        </div>
+                        <div *ngIf="
+                            pdfAddEditForm.get('logoImage')?.errors
+                              ?.maxSizeExceeded
+                          " class="text-red-500 text-sm">
+                          {{ 'file_size_limit_25kb' | transloco }}
+                        </div>
+                      </div>
+                      <div class="border border-gray-200 rounded-xl shadow overflow-hidden h-fit mt-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 grid-rows-2">
+                          <div class="p-4 flex items-center justify-between py-3">
+                            <span class="text-black text-sm font-bold">{{ 'only_map' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" [value]="null" class="sr-only peer" formControlName="onlyMap" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                          <div class="p-4 flex items-center justify-between py-3"
+                            *ngIf="!pdfAddEditForm.get('onlyMap')?.value">
+                            <span class="text-black text-sm font-bold">{{ 'defect_status_label' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" value="" class="sr-only peer" formControlName="defectStatus" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                          <div class="p-4 flex items-center justify-between py-3"
+                            *ngIf="!pdfAddEditForm.get('onlyMap')?.value">
+                            <span class="text-black text-sm font-bold">{{ 'defect_info' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" value="" class="sr-only peer" formControlName="defectInfo" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                          <div class="p-4 flex items-center justify-between py-3"
+                            *ngIf="!pdfAddEditForm.get('onlyMap')?.value">
+                            <span class="text-black text-sm font-bold">{{ 'defect_type_filter' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" value="" class="sr-only peer" formControlName="defectType" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                          <div class="p-4 flex items-center justify-between py-3"
+                            *ngIf="!pdfAddEditForm.get('onlyMap')?.value">
+                            <span class="text-black text-sm font-bold">{{ 'defect_id_reset' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" value="" class="sr-only peer" formControlName="defectIdReset" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                          <div class="p-4 flex items-center justify-between py-3">
+                            <span class="text-black text-sm font-bold">{{ 'ai_suggestion' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" value="" class="sr-only peer" formControlName="aiSuggestion" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                          <div class="p-4 flex items-center justify-between py-3">
+                            <span class="text-black text-sm font-bold">{{ 'location_filter' | transloco }}</span>
+                            <label class="inline-flex items-center cursor-pointer">
+                              <input type="checkbox" value="" class="sr-only peer" formControlName="locationFilter" />
+                              <div
+                                class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600">
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Sharing Configuration  -->
+                    <div class="col-span-full">
+                    
+                      <!-- Top Row -->
+                      <div class="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-3 py-2">
+                    
+                        <!-- LEFT SIDE -->
+                        <div>
+                          <h3 class="text-black text-sm font-bold mb-2">{{ 'report_sharing_configuration' | transloco }}</h3>
+                    
+                          <div class="flex items-center gap-4   overflow-hidden">
+                            <label class="flex items-center gap-2 px-6 py-2 cursor-pointer text-black border rounded-lg">
+                              <input type="radio" value="email" formControlName="sharing_configuration_type" class="accent-lightblue" />
+                              {{ 'email' | transloco }}
+                            </label>
+                            
+                            <label class="flex items-center gap-2 px-6 py-2 cursor-pointer text-black border rounded-lg">
+                              <input type="radio" value="sms" formControlName="sharing_configuration_type" class="accent-lightblue" />
+                              {{ 'sms' | transloco }}
+                            </label>
+                          </div>
+                          <!-- Validation Error -->
+                          <div *ngIf="pdfAddEditForm.get('sharing_configuration_type')?.touched 
+                                      && pdfAddEditForm.get('sharing_configuration_type')?.hasError('required')"
+                              class="text-red-500 text-xs mt-1">
+                            {{ 'sharing_configuration_required' | transloco }}
+                          </div>
+                        </div>
+                    
+                        <!-- RIGHT SIDE -->
+                        <div *ngIf="pdfAddEditForm.get('sharing_configuration_type')?.value === 'sms'" class="border border-gray-200 rounded-xl shadow overflow-visible h-fit mt-5 p-4 relative z-10">
+                          <h3 class="text-black text-sm font-bold mb-2"> {{ 'enter_mobile_number' | transloco }}</h3>
+                    
+                          <div class="flex gap-3 items-start flex-wrap">
+                            <div class="relative country-code-dropdown">
+                              <button
+                                type="button"
+                                (click)="toggleCountryCodeDropdown()"
+                                class="w-24 h-[42px] px-3 border border-gray-300 rounded-lg bg-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#073070]">
+                                <span>{{ selectedCountryCodeDisplay }}</span>
+                                <mat-icon class="text-base !w-4 !h-4">expand_more</mat-icon>
+                              </button>
+
+                              <div
+                                *ngIf="countryCodeDropdownOpen"
+                                class="absolute top-full left-0 mt-1 w-44 bg-white border border-gray-300 rounded-lg shadow-lg z-20 overflow-hidden">
+                                <button
+                                  type="button"
+                                  *ngFor="let option of countryCodeOptions"
+                                  (click)="selectCountryCodeOption(option.value)"
+                                  class="w-full px-3 py-2 text-left hover:bg-gray-100 transition">
+                                  {{ option.value === 'custom' ? 'Other' : (option.label + ' (' + option.value + ')') }}
+                                </button>
+                              </div>
+                            </div>
+
+                            <input
+                              *ngIf="pdfAddEditForm.get('country_code_selection')?.value === 'custom'"
+                              type="text"
+                              [placeholder]="'country_code' | transloco"
+                              maxlength="5"
+                              (keypress)="allowCountryCodeInput($event)"
+                              (input)="limitCountryCodeLength()"
+                              class="w-32 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#073070]"
+                              formControlName="custom_country_code" />
+
+                            <input type="text"
+                              [placeholder]="'enter_value' | transloco"
+                              maxlength="15"
+                              inputmode="numeric"
+                              pattern="[0-9]*"
+                              (keypress)="allowOnlyNumbers($event)"
+                              (input)="limitMobileLength()"
+                              class="w-56 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#073070]"
+                              formControlName="mobile_number" />
+
+                            <button type="button" (click)="onAddClick('mobile_number')"
+                              class="px-6 py-2 bg-[#073070] text-white rounded-lg hover:bg-[#0a3f8a] transition">
+                              {{ 'add' | transloco }}
+                            </button>
+                          </div>
+                          <div *ngIf="pdfAddEditForm.get('mobile_number')?.touched 
+                                      && pdfAddEditForm.get('mobile_number')?.errors"
+                              class="text-red-500 text-xs mt-1">
+
+                            <div *ngIf="pdfAddEditForm.get('mobile_number')?.hasError('required')">
+                             {{ 'mobile_required' | transloco }}
+                            </div>
+
+                            <div *ngIf="pdfAddEditForm.get('mobile_number')?.hasError('pattern')">
+                              {{ 'mobile_invalid' | transloco }}
+                            </div>
+                          </div>
+                          <div *ngIf="pdfAddEditForm.get('custom_country_code')?.touched 
+                                      && pdfAddEditForm.get('custom_country_code')?.errors"
+                              class="text-red-500 text-xs mt-1">
+                            <div *ngIf="pdfAddEditForm.get('custom_country_code')?.hasError('required')">
+                              Country code is required
+                            </div>
+                            <div *ngIf="pdfAddEditForm.get('custom_country_code')?.hasError('pattern')">
+                              {{ 'mobile_invalid' | transloco }}
+                            </div>
+                          </div>
+                          <div *ngIf="mobileListError" class="text-red-500 text-xs mt-2">
+                            {{ 'at_least_one_mobile' | transloco }}
+                          </div>
+                    
+                          <!-- Chips -->
+                          <div class="flex flex-wrap gap-2 mt-3" *ngIf="mobileList.length">
+                            <div *ngFor="let mobile of mobileList; let i = index"
+                                class="flex items-center bg-[#e7f3ff] text-[#073070] px-3 py-1 rounded-full shadow">
+
+                              <span>{{ getMobileChipLabel(mobile) }}</span>
+
+                              <button type="button"
+                                      (click)="removeMobile(i)"
+                                      class="ml-2 text-red-600 font-bold">
+                                ×
+                              </button>
+
+                            </div>
+                          </div>
+                    
+                        </div>
+
+                        <div *ngIf="pdfAddEditForm.get('sharing_configuration_type')?.value === 'email'" class="border border-gray-200 rounded-xl shadow overflow-hidden h-fit mt-5 p-4">
+                          <h3 class="text-black text-sm font-bold mb-2"> {{ 'enter_email_address' | transloco }}</h3>
+
+                          <div class="flex gap-3">
+                            <input type="text" [placeholder]="'enter_email' | transloco"
+                              class="w-64 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#073070]" formControlName="target_emails" />
+
+                            <button type="button" (click)="onAddClick('target_emails')"
+                              class="px-6 py-2 bg-[#073070] text-white rounded-lg hover:bg-[#0a3f8a] transition">
+                              {{ 'add' | transloco }}
+                            </button>
+                          </div>
+                          <div *ngIf="pdfAddEditForm.get('target_emails')?.touched 
+                                      && pdfAddEditForm.get('target_emails')?.errors" class="text-red-500 text-xs mt-1">
+                          
+                            <div *ngIf="pdfAddEditForm.get('target_emails')?.hasError('required')">
+                              {{ 'email_required' | transloco }}
+                            </div>
+                          
+                            <div *ngIf="pdfAddEditForm.get('target_emails')?.hasError('pattern')">
+                             {{ 'email_invalid' | transloco }}
+                            </div>
+                          </div>
+                          <div *ngIf="emailListError" class="text-red-500 text-xs mt-2">
+                            {{ 'at_least_one_email' | transloco }}
+                          </div>
+                          
+                          <!-- Chips -->
+                          <div class="flex flex-wrap gap-2 mt-3" *ngIf="emailList.length">
+                            <div *ngFor="let email of emailList; let i = index"
+                                class="flex items-center bg-[#e7f3ff] text-[#073070] px-3 py-1 rounded-full shadow">
+
+                              <span>{{ email }}</span>
+
+                              <button type="button"
+                                      (click)="removeEmail1(i)"
+                                      class="ml-2 text-red-600 font-bold">
+                                ×
+                              </button>
+
+                            </div>
+                          </div>
+                    
+                        </div>
+                    
+                      </div>
+                    </div>
+                    <div class="flex justify-center gap-3 items-center mt-2">
+                      <button *ngIf="addEditBtn == 'Add'"
+                        class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                        (click)="addPdfSave()">
+                        {{ 'save' | transloco }}
+                      </button>
+                      <button *ngIf="addEditBtn == 'Edit'"
+                        class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                        (click)="EditPdfSave()">
+                        <img class="w-5 mr-1" src="assets/icons/Update.svg" alt="" />
+
+                        {{ 'update' | transloco }}
+                      </button>
+                      <button
+                        class="bg-gray-100 border-gray-100 hover:bg-gray-200 hover:border-gray-200 text-gray-800 px-4 py-2 rounded-lg ml-2"
+                        (click)="cancleAddPdf()">
+                        {{ 'cancel' | transloco }}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div *ngIf="selectedReportTab === 'production'" class="">
+              <div *ngIf="!showPdfList" class="p-3">
+                <div class="w-full">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                     <div *ngFor="let reportConfig of productionReportConfigData" 
+                      class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all cursor-pointer" [class.bg-green-100]="reportConfig.status === 1">
+                      <div class="flex items-center gap-2">
+                        <input [checked]="reportConfig.status === 1" type="checkbox" (click)="
+                            updateStatusForReportConfig(reportConfig.report_config_name)
+                          " class="mr-2" />
+                        <img class="w-6" src="assets/icons/PDF.svg" alt="" />
+                        <span class="text-black text-sm font-normal w-1/2 md:w-10/12">
+                          {{ reportConfig.report_config_name }}
+                        </span>
+                      </div>
+
+                      <div class="flex items-center gap-3">
+                        <button *ngIf="deleteProductionReportConfigStatus" (click)="
+                            openDeleteModalforProductionReport(reportConfig.report_config_name);
+                            $event.stopPropagation()
+                          " class="Delete-icon">
+                          <img src="assets/icons/Trash.svg" alt="" />
+                        </button>
+                        <button *ngIf="editProductionReportConfigStatus" (click)="
+                            reportConfigurationUpdate(reportConfig.report_config_name);
+                            $event.stopPropagation()
+                          " class="Edit-icon">
+                          <img src="assets/icons/Edit.svg" alt="" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div *ngIf="productionReportConfigData.length == 0" class="col-span-2">
+                      <div class="text-red-600 text-center py-2 text-lg">
+                        {{ 'no_report_config_found' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="showPdfList" class="p-3">
+                <form [formGroup]="reportConfigurationForm" (keydown.enter)="disableEnter($event)">
+                  <div class="w-full">
+                
+                    <div class="pt-6">
+                
+                      <!-- Row with 3 inputs -->
+                      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                        <!-- Report Config Name -->
+                        <div>
+                          <label class="block text-black text-sm font-bold mb-1">
+                            {{ 'report_config_name' | transloco }}
+                          </label>
+                          <input type="text" formControlName="configName" class="w-full p-2 border border-gray-200 rounded-lg"
+                            [placeholder]="'enter_report_config_name' | transloco" />
+
+                          <div class="text-red-500 text-sm mt-1" *ngIf="reportConfigurationForm.get('configName')?.touched">
+                            <div *ngIf="reportConfigurationForm.get('configName')?.hasError('required')">
+                              {{ 'config_name_required' | transloco }}
+                            </div>
+                            <div *ngIf="reportConfigurationForm.get('configName')?.hasError('pattern')">
+                              {{ 'special_characters_not_allowed' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                
+                        <!-- Frequency -->
+                        <div>
+                          <label class="block text-black text-sm font-bold mb-1">
+                            {{ 'frequency' | transloco }}
+                          </label>
+                        
+                          <input type="text" formControlName="frequency" class="w-full p-2 border border-gray-200 rounded-lg"
+                            [placeholder]="'select_frequency' | transloco" />
+                        
+                          <!-- Error Messages -->
+                          <div class="text-red-500 text-sm mt-1" *ngIf="reportConfigurationForm.get('frequency')?.touched">
+                        
+                            <!-- Required -->
+                            <div *ngIf="reportConfigurationForm.get('frequency')?.hasError('required')">
+                              {{ 'frequency_required' | transloco }}
+                            </div>
+                        
+                            <!-- Pattern -->
+                            <div *ngIf="reportConfigurationForm.get('frequency')?.hasError('pattern')">
+                              {{ 'numeric_values_only' | transloco }}
+                            </div>
+                        
+                            <!-- Min Value -->
+                            <div *ngIf="reportConfigurationForm.get('frequency')?.hasError('min')">
+                              {{ 'min_frequency_1' | transloco }}
+                            </div>
+                        
+                            <!-- Max Value -->
+                            <div *ngIf="reportConfigurationForm.get('frequency')?.hasError('max')">
+                              {{ 'max_frequency_30' | transloco }}
+                            </div>
+                        
+                          </div>
+                        </div>
+
+                        <!--Sending Time -->
+                        <div class="basis-full md:basis-1/4">
+                          <label class="block text-black text-sm font-bold mb-1">
+                            {{ 'sending_time' | transloco }}
+                          </label>
+                        
+                          <div class="time-wrapper relative">
+                            <!-- Display Input -->
+                            <input type="text" readonly class="time-input" formControlName="time" [value]="selectedHour + ':' + selectedMinute"
+                              (click)="togglePicker()" placeholder="HH:MM" />
+                        
+                            <!-- Picker -->
+                            <div class="picker-panel" *ngIf="showPicker">
+                              <!-- Hour -->
+                              <div class="column">
+                                <div *ngFor="let h of hours" class="item" [class.active]="h === selectedHour" (click)="selectHour(h)">
+                                  {{ h }}
+                                </div>
+                              </div>
+                        
+                              <!-- Minute -->
+                              <div class="column">
+                                <div *ngFor="let m of minutes" class="item" [class.active]="m === selectedMinute" (click)="selectMinute(m)">
+                                  {{ m }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        
+                          <div class="text-red-500 text-sm mt-1" *ngIf="
+                              reportConfigurationForm.get('time')?.touched &&
+                              reportConfigurationForm.get('time')?.hasError('required')
+                            ">
+                            {{ 'time_required' | transloco }}
+                          </div>
+                        </div>
+
+
+
+                        <!-- Target Emails -->
+                        <div>
+                          <label class="block text-black text-sm font-bold mb-1">
+                            {{ 'target_emails' | transloco }}
+                          </label>
+                        
+                          <div class="relative w-full">
+                            <input type="text" formControlName="targetEmails" class="w-full p-2 pr-10 border border-gray-200 rounded-lg"
+                              [placeholder]="'enter_email' | transloco" />
+                        
+                            <!-- + Button inside input -->
+                            <button type="button" (click)="addEmail()"
+                              class="absolute right-2 top-1/2 -translate-y-1/2 bg-brandColor text-white w-7 h-7 rounded-full flex items-center justify-center text-lg font-bold hover:bg-brandColor-700">
+                              +
+                            </button>
+                          </div>
+                        
+                          <!-- Error Messages -->
+                          <div class="text-red-500 text-sm mt-1" *ngIf="reportConfigurationForm.get('targetEmails')?.touched">
+                        
+                            <div *ngIf="reportConfigurationForm.get('targetEmails')?.hasError('required')">
+                              {{ 'email_required' | transloco }}
+                            </div>
+                        
+                            <div *ngIf="reportConfigurationForm.get('targetEmails')?.hasError('invalid')">
+                              {{ 'invalid_email_format' | transloco }}
+                            </div>
+                        
+                            <div *ngIf="reportConfigurationForm.get('targetEmails')?.hasError('email')">
+                              {{ 'enter_valid_email' | transloco }}
+                            </div>
+                        
+                          </div>
+                        
+                          <!-- Email Chips -->
+                          <div class="flex flex-wrap gap-2 mt-3">
+                            <div *ngFor="let email of emails; let i = index"
+                              class="flex items-center bg-[#e7f3ff] text-[#073070] px-3 py-1 rounded-full shadow">
+                              <span>{{ email }}</span>
+                              <button type="button" (click)="removeEmail(i)" class="ml-2 text-red-600 font-bold">
+                                ×
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                
+                      </div>
+                
+                      <!-- Filters Section -->
+                      <div class="mt-5 border border-blue-100 rounded-md p-4">
+                        <h4 class="text-[#073070] font-semibold mb-3">{{ 'filters' | transloco }}</h4>
+                
+                        <div class="w-full flex items-center gap-3">
+                
+                          <!-- Select Machine -->
+                          <div class="basis-full md:basis-1/4">
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'select_machine' | transloco }}</label>
+                            <ng-multiselect-dropdown
+                              [placeholder]="'select_machine' | transloco"
+                              [settings]="machineDropdownSettings"
+                              [data]="machineData"
+                              formControlName="machineIds"
+                              class="w-full">
+                            </ng-multiselect-dropdown>
+                            <!-- Error message -->
+                            <div
+                              class="text-red-500 text-sm mt-1"
+                              *ngIf="
+                                reportConfigurationForm.get('machineIds')?.touched &&
+                                reportConfigurationForm.get('machineIds')?.hasError('required')
+                              "
+                            >
+                              {{ 'select_at_least_one_machine' | transloco }}
+                            </div>
+                          </div>
+                
+                          <!-- Select Repair Machine -->
+                          <div class="basis-full md:basis-1/4">
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'select_repair_machine_id' | transloco }}</label>
+                             <ng-multiselect-dropdown
+                              [placeholder]="'select_machine' | transloco"
+                              [settings]="machineDropdownSettings"
+                              [data]="repairMachineIds"
+                              formControlName="repairMachineId"
+                              [idField]="'id'"
+                              [textField]="'name'"
+                              class="w-full">
+                            </ng-multiselect-dropdown>
+                          </div>
+                
+                          <!-- Number of Days -->
+                          <div class="basis-full md:basis-1/4">
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'number_of_days' | transloco }}</label>
+                            <input type="number" formControlName="days" [placeholder]="'enter_number_of_days' | transloco"
+                              class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md" />
+
+                              <!-- Error Messages -->
+                              <div class="text-red-500 text-sm mt-1"
+                                *ngIf="reportConfigurationForm.get('days')?.touched">
+
+                                <!-- Required -->
+                                <div *ngIf="reportConfigurationForm.get('days')?.hasError('required')">
+                                  {{ 'number_of_days_required' | transloco }}
+                                </div>
+
+                                <!-- Min -->
+                                <div *ngIf="reportConfigurationForm.get('days')?.hasError('min')">
+                                  {{ 'min_value_1' | transloco }}
+                                </div>
+
+                                <!-- Max -->
+                                <div *ngIf="reportConfigurationForm.get('days')?.hasError('max')">
+                                  {{ 'max_value_100' | transloco }}
+                                </div>
+
+                              </div>
+                          </div>
+
+                          <!-- Select Excel Columns-->
+                           <div class="basis-full md:basis-1/4">
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'select_excel_column' | transloco }}</label>
+                            <ng-multiselect-dropdown
+                              #excelDropdown
+                              [placeholder]="'select_excel_column' | transloco"
+                              [settings]="excelColumnSetting"
+                              [data]="excelColumnData"
+                              formControlName="columnName"
+                              (onSelect)="setExcelColumn($event, 'select')"
+                              (onDeSelect)="setExcelColumn($event, 'deselect')"
+                              [idField]="'id'"
+                              [textField]="'name'"
+                              class="w-full">
+                            </ng-multiselect-dropdown>
+                             <div
+                              class="text-red-500 text-sm mt-1"
+                              *ngIf="
+                                reportConfigurationForm.get('columnName')?.touched &&
+                                reportConfigurationForm.get('columnName')?.hasError('required')
+                              "
+                              >
+                                {{ 'please_select_columns' | transloco }}
+                              </div>
+                          </div>
+                        </div>
+                
+                        <div class="grid grid-cols-1 md:grid-cols-4 mt-3 p-2 border bg-gray-50 rounded-md gap-4">
+                
+                          <!-- Rolls Status -->
+                          <div>
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'rolls_status' | transloco }}</label>
+                            <select formControlName="rollsStatus"
+                              class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                              <option value="">{{ 'all_status' | transloco }}</option>
+                              <option value="null">{{ 'inspected' | transloco }}</option>
+                              <option value="1">{{ 'review_inprogress' | transloco }}</option>
+                              <option value="2">{{ 'reviewed' | transloco }}</option>
+                              <option value="3">{{ 'half_repaired' | transloco }}</option>
+                              <option value="4">{{ 'repaired' | transloco }}</option>
+                            </select>
+                          </div>
+                
+                          <!-- Data Status -->
+                          <div>
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'data_status' | transloco }}</label>
+                            <select
+                              class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md"
+                              formControlName="dataStatus" (change)="onSelectionChange($event)">
+                              <option value="">{{ 'all_status' | transloco }}</option>
+                              <option *ngFor="let option of mergedOptions" [value]="option.value">{{ option.viewValue }}</option>
+                            </select>
+                          </div>
+                
+                          <!-- Recipe -->
+                          <div>
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'recipe' | transloco }}</label>
+                            <select formControlName="recipe" (change)="onRecipeChange($event)"
+                              class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                              <option value="">{{ 'all_recipes' | transloco }}</option>
+                              <option *ngFor="let recipe of recipeNames" [value]="recipe.recipe">{{ recipe.recipe }}</option>
+                            </select>
+                          </div>
+                
+                          <!-- User Tag -->
+                          <div>
+                            <label class="block text-black text-sm font-bold mb-1">{{ 'user_tag' | transloco }}</label>
+                            <select formControlName="userTag"
+                              class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                              <option value="">{{ 'all_tags' | transloco }}</option>
+                              <option *ngFor="let t of tagDropdownList" [value]="t.item_id">{{ t.item_text }}</option>
+                            </select>
+                          </div>
+                
+                        </div>
+                      </div>
+                
+                      <!-- Buttons -->
+                      <div class="flex justify-center gap-3 items-center mt-2">
+                
+                        <button *ngIf="addEditBtn == 'Add'"
+                          class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                          (click)="addReportConfiguration('add')">
+                          {{ 'save' | transloco }}
+                        </button>
+                
+                        <button *ngIf="addEditBtn == 'Edit'"
+                          class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                          (click)="addReportConfiguration('edit')">
+                          <img class="w-5 mr-1" src="assets/icons/Update.svg" alt="" />
+                          {{ 'update' | transloco }}
+                        </button>
+                
+                        <button
+                          class="bg-gray-100 border-gray-100 hover:bg-gray-200 hover:border-gray-200 text-gray-800 px-4 py-2 rounded-lg ml-2"
+                          (click)="cancleAddPdf()">
+                          {{ 'cancel' | transloco }}
+                        </button>
+                
+                      </div>
+                
+                    </div>
+                
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'quality-code'">
+          <div class="flex justify-between items-center text-xl font-semibold rounded-lg mb-1 p-2 px-3">
+            <h3></h3>
+            <div class="flex items-center gap-2">
+              <button type="button" *ngIf="addQualityCodeConfigStatus && !showList" (click)="toggleView()"
+                class="text-white bg-brandColor font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center hover:shadow-md transition">
+                <mat-icon [svgIcon]="'heroicons_solid:plus'" class="text-white"></mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="!showList" class="p-3">
+            <div class="w-full">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                <div *ngFor="
+                    let getAllQualityList of getAllQualityLists;
+                    let i = index
+                  "
+                  class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all cursor-pointer">
+                  <div class="flex items-center gap-2">
+                    <img class="w-6" src="assets/icons/circle-filter.svg" alt="" />
+                    <span class="text-black text-sm font-normal w-1/2 md:w-10/12">
+                      {{ getAllQualityList.quality_code }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-3" *ngIf="!getAllQualityList.isdisabled">
+                    <button *ngIf="deleteQualityCodeConfigStatus" (click)="
+                        openDeleteModalforQualitylist(
+                          getAllQualityList.quality_code_id
+                        )
+                      " [disabled]="getAllQualityList.isdisabled === 1" class="Delete-icon">
+                      <img src="assets/icons/Trash.svg" alt="" />
+                    </button>
+                    <button *ngIf="editQualityCodeConfigStatus" [disabled]="getAllQualityList.isdisabled === 1"
+                      (click)="qualityCodeEdit(getAllQualityList)" class="Edit-icon">
+                      <img src="assets/icons/Edit.svg" alt="" />
+                    </button>
+                  </div>
+                </div>
+
+                <div *ngIf="getAllQualityLists.length == 0" class="col-span-2">
+                  <div class="text-red-600 text-center py-2 text-lg">
+                    {{ 'no_quality_code_found' | transloco }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="showList" class="p-3">
+            <form [formGroup]="qualityCodeAddEditForm" class="w-full">
+              <div class="flex gap-2 items-center justify-between border-b pb-2">
+                <div class="flex gap-3 flex-col sm:flex-row items-center">
+                  <div class="flex flex-col">
+                    <div>
+                      <label class="block text-black text-sm font-bold mb-1" for="username">
+                        {{ 'code_name' | transloco }}
+                      </label>
+                      <input type="text" class="p-2 border border-gray-200 rounded-lg" [placeholder]="'quality_code_name' | transloco"
+                        formControlName="quality_code" (keydown.space)="preventSpace($event)" />
+                    </div>
+                    <div *ngIf="
+                        qualityCodeAddEditForm.get('quality_code')?.invalid &&
+                        (qualityCodeAddEditForm.get('quality_code')?.dirty ||
+                          qualityCodeAddEditForm.get('quality_code')?.touched)
+                      " class="text-red-500 text-sm">
+                      <span *ngIf="qualityCodeAddEditForm.get('quality_code')?.errors?.['required']">Config name is
+                        {{ 'config_name_required' | transloco }}</span>
+                      <span *ngIf="qualityCodeAddEditForm.get('quality_code')?.errors?.['pattern']">Special characters
+                        {{ 'special_characters_not_allowed' | transloco }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-3 gap-3 mt-3">
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">
+                    {{ 'ai_agent' | transloco }}
+                  </label>
+                  <select class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                    formControlName="model_id" (click)="loadModel($event.target.value)">
+                    <option value="null">{{ 'select_model' | transloco }}</option>
+                    <option *ngFor="let data of all_model_data" value="{{ data.model_id }}">
+                      {{ data.model_name }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">
+                    {{ 'defect_type' | transloco }}
+                  </label>
+                  <ng-multiselect-dropdown class="w-full" [placeholder]="'select_type' | transloco" [settings]="dropdownSettings"
+                    [data]="defectsDropDown" formControlName="defect_type" (onSelect)="onItemSelect($event)"
+                    (onSelectAll)="onSelectAll($event)"></ng-multiselect-dropdown>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-3 gap-3 mt-3">
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1" for="DefectSize">
+                    {{ 'defect_size_mm' | transloco }}
+                  </label>
+                  <select formControlName="defect_size"
+                    class="appearance-none border rounded py-3 px-3 bg-white text-gray-700 leading-tight focus:outline-none text-center w-full"
+                    (change)="onOptionSelected($event.target.value)">
+                    <option value="null">{{ 'select' | transloco }}</option>
+                    <option value="<=">
+                      <= 
+                    </option>
+                    <option value=">=">>=</option>
+                    <option value="<>">
+                      <>
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1 mt-5">
+                    <input maxlength="10" *ngIf="showFirstInput" formControlName="defect_size1"
+                      (keyup)="onInputFieldClick('defect_size1')"
+                      class="appearance-none border rounded w-4/12 md:w-2/5 py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                      type="text" [placeholder]="'value' | transloco" (keypress)="onKeyPress($event)" />
+                    <div *ngIf="isFieldClicked('defect_size1')">
+                      <div *ngIf="
+                          qualityCodeAddEditForm
+                            .get('defect_size1')
+                            .hasError('pattern') &&
+                          !qualityCodeAddEditForm
+                            .get('defect_size1')
+                            .hasError('required')
+                        " class="text-sm text-red-600">
+                        {{ 'invalid_input' | transloco }}
+                      </div>
+                    </div>
+                    <div *ngIf="
+                        submitted &&
+                        qualityCodeAddEditForm
+                          .get('defect_size1')
+                          .hasError('required')
+                      " class="text-sm text-red-600">
+                      {{ 'value_required' | transloco }}
+                    </div>
+                    <label *ngIf="showBothInputs" class="block text-gray-700 text-xs font-bold mb-1" for="DefectSize">
+                      {{ 'to' | transloco }}
+                    </label>
+                    <input maxlength="10" *ngIf="showBothInputs" formControlName="defect_size2"
+                      (keyup)="onInputFieldClick('defect_size2')"
+                      class="appearance-none border rounded w-4/12 md:w-2/5 py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                      type="text" [placeholder]="'value' | transloco" (keypress)="onKeyPress($event)" />
+                    <div *ngIf="isFieldClicked('defect_size2')">
+                      <div *ngIf="
+                          qualityCodeAddEditForm
+                            .get('defect_size2')
+                            .hasError('lessThan') &&
+                          isTyping &&
+                          !qualityCodeAddEditForm
+                            .get('defect_size2')
+                            .hasError('required')
+                        " class="text-xs text-red-600">
+                        {{ 'value_must_be_greater' | transloco }}
+                      </div>
+                      <div *ngIf="
+                          qualityCodeAddEditForm
+                            .get('defect_size2')
+                            .hasError('pattern') &&
+                          isTyping &&
+                          !qualityCodeAddEditForm
+                            .get('defect_size2')
+                            .hasError('required')
+                        " class="text-sm text-red-600">
+                        {{ 'invalid_input' | transloco }}
+                      </div>
+                    </div>
+                    <div *ngIf="
+                        submitted &&
+                        qualityCodeAddEditForm
+                          .get('defect_size2')
+                          .hasError('required')
+                      " class="text-sm text-red-600">
+                      {{ 'value_required' | transloco }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-3 gap-3 mt-3">
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1" for="username">
+                    {{ 'width_min_value' | transloco }}
+                  </label>
+
+                  <input type="text" class="p-2 border border-gray-200 rounded-lg w-full" [placeholder]="'enter_min_value' | transloco"
+                    [class.border-red-500]="
+                      qualityCodeAddEditForm.get('min_tolerance')?.invalid &&
+                      qualityCodeAddEditForm.get('min_tolerance')?.touched
+                    " formControlName="min_tolerance" (keydown)="preventNonNumeric($event)" maxlength="6" />
+                  <div *ngIf="
+                      qualityCodeAddEditForm.get('min_tolerance')?.invalid &&
+                      qualityCodeAddEditForm.get('min_tolerance')?.touched
+                    " class="text-red-500 text-sm">
+                    {{ 'min_tolerance_required_msg' | transloco }}
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1" for="username">
+                    {{ 'width_max_value' | transloco }}
+                  </label>
+
+                  <input type="text" class="p-2 border border-gray-200 rounded-lg w-full" [placeholder]="'enter_max_value' | transloco"
+                    [class.border-red-500]="
+                      qualityCodeAddEditForm.get('max_tolerance')?.invalid &&
+                      qualityCodeAddEditForm.get('max_tolerance')?.touched
+                    " formControlName="max_tolerance" (keydown)="preventNonNumeric($event)" maxlength="6" />
+                  <div *ngIf="
+                      qualityCodeAddEditForm.get('max_tolerance')?.invalid &&
+                      qualityCodeAddEditForm.get('max_tolerance')?.touched
+                    " class="text-red-500 text-sm">
+                    {{ 'max_tolerance_required_msg' | transloco }}
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-center gap-3 items-center mt-2">
+                <button class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                  *ngIf="addEditBtnQualitycode == 'Add'" (click)="addQualityCodeSave()">
+                  {{ 'save' | transloco }}
+                </button>
+
+                <button *ngIf="addEditBtnQualitycode == 'Edit'"
+                  class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                  (click)="EditQualityCodeSave()">
+                  <img class="w-5 mr-1" src="assets/icons/Update.svg" alt="" />
+
+                  {{ 'update' | transloco }}
+                </button>
+
+                <button
+                  class="bg-gray-100 border-gray-100 hover:bg-gray-200 hover:border-gray-200 text-gray-800 px-4 py-2 rounded-lg ml-2"
+                  (click)="cancleQualityCode()">
+                  {{ 'cancel' | transloco }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'config'">
+          <div class="flex flex-wrap items-center justify-between w-full p-2 pb-0">
+            <!-- Tabs Section -->
+            <div class="flex w-full md:w-auto gap-2">
+              <button class="px-5 py-2 rounded-lg font-medium border shadow transition-all duration-200" [ngClass]="
+                          selectedConfigTab === 'repair_machine_config'
+                            ? 'bg-brandColor text-white border-transparent hover:bg-gray-800'
+                            : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
+                        " (click)="selectedConfigTab = 'repair_machine_config'">
+                {{ 'repair_machine_config' | transloco }}
+              </button>
+        
+              <button class="px-5 py-2 rounded-lg font-medium border shadow transition-all duration-200" [ngClass]="
+                          selectedConfigTab === 'inspection_machine_config'
+                            ? 'bg-brandColor text-white border-transparent hover:bg-gray-800'
+                            : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-100'
+                        " (click)="selectedConfigTab = 'inspection_machine_config'">
+                {{ 'inspection_machine_config' | transloco }}
+              </button>
+            </div>
+        
+            <!-- Right-side Add/Update Button -->
+            <button *ngIf="addRepairMachineConfigStatus && selectedConfigTab === 'repair_machine_config' && !showPdfList" type="button" (click)="toggleInspectionMachine('add')"
+              [ngClass]="'rounded-full w-11 h-11 flex items-center justify-center text-3xl'"
+              class="text-white bg-brandColor font-medium text-sm text-center inline-flex items-center hover:shadow-md transition">
+              +
+            </button>
+            <button *ngIf="addInspectionMachineConfigStatus && selectedConfigTab === 'inspection_machine_config' && !showPdfList" type="button" (click)="toggleInspectionMachine('add')"
+              [ngClass]="'rounded-full w-11 h-11 flex items-center justify-center text-3xl'"
+              class="text-white bg-brandColor font-medium text-sm text-center inline-flex items-center hover:shadow-md transition">
+              +
+            </button>
+        
+        
+          </div>
+        
+          <!-- Tabs Container -->
+          <div>
+            <div *ngIf="selectedConfigTab === 'repair_machine_config'" class="">
+              <div *ngIf="!showList" class="p-3">
+                <div class="w-full">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <div *ngFor="
+                            let machineData of allMachinesData;
+                            let i = index
+                          "
+                      class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all cursor-pointer">
+                      <div class="flex items-center gap-2">
+                        <img class="w-6" src="assets/icons/icon-config.svg" alt="" />
+                        <span class="text-black text-sm font-normal w-1/2 md:w-10/12">
+                          {{ machineData.repair_machine_id }}
+                        </span>
+                      </div>
+        
+                      <div class="flex items-center gap-3">
+                        <button *ngIf="deleteRepairMachineConfigStatus" (click)="
+                                openDeleteModalforMachineConfig(
+                                  machineData.repair_machine_setup_id
+                                )
+                              " class="Delete-icon">
+                          <img src="assets/icons/Trash.svg" alt="" />
+                        </button>
+                        <button *ngIf="editRepairMachineConfigStatus" (click)="machineConfig(machineData)" class="Edit-icon">
+                          <img src="assets/icons/Edit.svg" alt="" />
+                        </button>
+                      </div>
+                    </div>
+        
+                    <div *ngIf="allMachinesData.length == 0" class="col-span-2">
+                      <div class="text-red-600 text-center py-2 text-md">
+                        {{ 'no_machine_data_found' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="showList" class="p-3">
+                <form [formGroup]="Form" class="w-full">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 mb-3 gap-3 mt-3">
+        
+                    <div>
+                      <label class="block text-black text-sm font-bold mb-1">
+                        {{ 'repair_machine_id' | transloco }}
+                      </label>
+        
+                      <input type="text" class="p-2 border border-gray-200 rounded-lg w-full"
+                        [placeholder]="'enter_repair_machine_id' | transloco" formControlName="repair_machine_id" />
+        
+                      <div *ngIf="submitted && f['repair_machine_id'].errors">
+                        <div *ngIf="f['repair_machine_id'].errors['required']" class="text-red-600">
+                          {{ 'machine_id_required_msg' | transloco }}
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div>
+                      <label class="block text-black text-sm font-bold mb-1">
+                        {{ 'repair_table_width' | transloco }}
+                      </label>
+        
+                      <input type="text" class="p-2 border border-gray-200 rounded-lg w-full"
+                        [placeholder]="'enter_repair_table_width' | transloco" formControlName="inspection_table_width" />
+        
+                      <div *ngIf="submitted && f['inspection_table_width'].errors">
+                        <div *ngIf="f['inspection_table_width'].errors['required']" class="text-red-600">
+                          {{ 'repair_table_width_required_msg' | transloco }}
+                        </div>
+        
+                        <ng-container *ngIf="!f['inspection_table_width'].errors['required']">
+                          <div *ngIf="f['inspection_table_width'].errors['pattern']" class="text-red-600">
+                            {{ 'please_enter_valid_value' | transloco }}
+                          </div>
+                          <div *ngIf="f['inspection_table_width'].errors['lessThan']" class="text-red-600">
+                            {{ 'repair_table_width_greater_0' | transloco }}
+                          </div>
+                          <div *ngIf="f['inspection_table_width'].errors['max']" class="text-red-600">
+                            {{ 'repair_table_width_max_1000' | transloco }}
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+        
+                    <div>
+                      <label class="block text-black text-sm font-bold mb-1">
+                        {{ 'splicing_offset' | transloco }}
+                      </label>
+        
+                      <input type="text" class="p-2 border border-gray-200 rounded-lg w-full"
+                        [placeholder]="'enter_splicing_offset' | transloco" formControlName="splicing_offset" />
+        
+                      <div *ngIf="submitted && f['splicing_offset'].errors">
+                        <div *ngIf="f['splicing_offset'].errors['required']" class="text-red-600">
+                          {{ 'splicing_offset_required_msg' | transloco }}
+                        </div>
+        
+                        <ng-container *ngIf="!f['splicing_offset'].errors['required']">
+                          <div *ngIf="f['splicing_offset'].errors['pattern']" class="text-red-600">
+                            {{ 'please_enter_valid_value' | transloco }}
+                          </div>
+                          <div *ngIf="f['splicing_offset'].errors['lessThan']" class="text-red-600">
+                            {{ 'splicing_offset_greater_0' | transloco }}
+                          </div>
+                          <div *ngIf="f['splicing_offset'].errors['max']" class="text-red-600">
+                            {{ 'splicing_offset_max_10000_msg' | transloco }}
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+        
+                    <div>
+                      <label class="block text-black text-sm font-bold mb-1">
+                        {{ 'repairing_offset' | transloco }}
+                      </label>
+        
+                      <input type="text" class="p-2 border border-gray-200 rounded-lg w-full" [placeholder]="'enter_max_value' | transloco"
+                        formControlName="repairing_offset" />
+        
+                      <div *ngIf="submitted && f['repairing_offset'].errors">
+                        <div *ngIf="f['repairing_offset'].errors['required']" class="text-red-600">
+                          {{ 'repairing_offset_required_msg' | transloco }}
+                        </div>
+        
+                        <ng-container *ngIf="!f['repairing_offset'].errors['required']">
+                          <div *ngIf="f['repairing_offset'].errors['pattern']" class="text-red-600">
+                            {{ 'please_enter_valid_value' | transloco }}
+                          </div>
+                          <div *ngIf="f['repairing_offset'].errors['lessThan']" class="text-red-600">
+                            {{ 'repairing_offset_greater_0' | transloco }}
+                          </div>
+                          <div *ngIf="f['repairing_offset'].errors['max']" class="text-red-600">
+                            {{ 'repairing_offset_max_1000' | transloco }}
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+        
+                    <div>
+                      <label class="block text-black text-sm font-bold mb-1">
+                        {{ 'jogging_offset' | transloco }}
+                      </label>
+        
+                      <input type="text" class="p-2 border border-gray-200 rounded-lg w-full" [placeholder]="'enter_max_value' | transloco"
+                        formControlName="jogging_offset" />
+        
+                      <div *ngIf="submitted && f['jogging_offset'].errors">
+                        <div *ngIf="f['jogging_offset'].errors['required']" class="text-red-600">
+                          {{ 'jogging_offset_required_msg' | transloco }}
+                        </div>
+        
+                        <ng-container *ngIf="!f['jogging_offset'].errors['required']">
+                          <div *ngIf="f['jogging_offset'].errors['pattern']" class="text-red-600">
+                            {{ 'please_enter_valid_value' | transloco }}
+                          </div>
+                          <div *ngIf="f['jogging_offset'].errors['min']" class="text-red-600">
+                            {{ 'jogging_offset_min_1000' | transloco }}
+                          </div>
+                          <div *ngIf="f['jogging_offset'].errors['max']" class="text-red-600">
+                            {{ 'jogging_offset_max_10000' | transloco }}
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+        
+                  </div>
+        
+                  <div class="flex justify-center gap-3 items-center mt-2">
+                    <button *ngIf="addEditBtnMachineConfig == 'Add'" class="brand-button text-white px-4 py-2 rounded-lg"
+                      (click)="onSubmit('Add')">
+                      {{ 'save' | transloco }}
+                    </button>
+        
+                    <button *ngIf="addEditBtnMachineConfig == 'Edit'"
+                      class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                      (click)="onSubmit('Edit')">
+                      <img class="w-5 mr-1" src="assets/icons/Update.svg" alt="" />
+        
+                      {{ 'update' | transloco }}
+                    </button>
+        
+                    <button class="bg-gray-100 px-4 py-2 rounded-lg" (click)="cancleMachineConfig()">
+                      {{ 'cancel' | transloco }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+        
+            <div *ngIf="selectedConfigTab === 'inspection_machine_config'" class="">
+              <div *ngIf="!showList" class="p-3">
+                <div class="w-full">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <div *ngFor="
+                                                        let data of machineData;
+                                                        let i = index
+                                                      "
+                      class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all cursor-pointer">
+                      <div class="flex items-center gap-2">
+                        <img class="w-6" src="assets/icons/icon-config.svg" alt="" />
+                        <span class="text-black text-sm font-normal w-1/2 md:w-10/12">
+                          {{ data.name }}
+                        </span>
+                      </div>
+        
+                      <div class="flex items-center gap-3">
+                        <button *ngIf="deleteInspectionMachineConfigStatus" (click)="openDeleteModalforInspectionMachineConfig(data.id)" class="Delete-icon">
+                          <img src="assets/icons/Trash.svg" alt="" />
+                        </button>
+                        <button *ngIf="editInspectionMachineConfigStatus" (click)="editInspectionMachineConfig(data)" class="Edit-icon">
+                          <img src="assets/icons/Edit.svg" alt="" />
+                        </button>
+                      </div>
+                    </div>
+        
+                    <div *ngIf="allMachinesData.length == 0" class="col-span-2">
+                      <div class="text-red-600 text-center py-2 text-md">
+                        {{ 'no_machine_data_found' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="showList" class="p-3">
+                <form [formGroup]="inspectionForm" class="w-full">
+        
+                  <div class="space-y-4">
+        
+                    <div class="grid grid-cols-12 items-center gap-3">
+                      <label class="col-span-2 text-black text-md font-bold">
+                        {{ 'machine_name' | transloco }}
+                      </label>
+        
+                      <div class="col-span-10">
+                        <input type="text" class="p-2 border border-gray-200 rounded-lg w-full" [placeholder]="'enter_machine_name' | transloco"
+                          formControlName="machine_name" />
+        
+                        <div *ngIf="submitted && inspectionF['machine_name'].errors">
+                          <div *ngIf="inspectionF['machine_name'].errors['required']" class="text-red-600 text-sm">
+                            {{ 'machine_name_required' | transloco }}
+                          </div>
+                          <div *ngIf="inspectionF['machine_name'].errors['pattern']" class="text-red-600 text-sm">
+                            {{ 'enter_valid_name' | transloco }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div class="grid grid-cols-12 items-center gap-3">
+                      <label class="col-span-2 text-black text-md font-bold">
+                        {{ 'machine_ip' | transloco }}
+                      </label>
+        
+                      <div class="col-span-10 flex items-center gap-3">
+                        <div class="flex-1">
+                          <input type="text" class="p-2 border border-gray-200 rounded-lg w-full" [placeholder]="'enter_machine_ip' | transloco"
+                            formControlName="machine_ip" />
+        
+                          <div *ngIf="submitted && inspectionF['machine_ip'].errors">
+                            <div *ngIf="inspectionF['machine_ip'].errors['required']" class="text-red-600 text-sm">
+                              {{ 'machine_ip_required' | transloco }}
+                            </div>
+                            <div *ngIf="inspectionF['machine_ip'].errors['pattern']" class="text-red-600 text-sm">
+                              {{ 'enter_valid_ip' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+        
+                      </div>
+                    </div>
+                  </div>
+        
+                  <div class="flex justify-center gap-3 items-center mt-6">
+                    <button *ngIf="addEditBtnInspectionMachineConfig == 'Add'"
+                      class="brand-button text-white px-4 py-2 rounded-lg" (click)="onInspectionSubmit('Add')">
+                      {{ 'save' | transloco }}
+                    </button>
+        
+                    <button *ngIf="addEditBtnInspectionMachineConfig == 'Edit'"
+                      class="brand-button text-white px-4 py-2 rounded-lg flex items-center"
+                      (click)="onInspectionSubmit('Edit')">
+                      <img class="w-5 mr-1" src="assets/icons/Update.svg" />
+                      {{ 'update' | transloco }}
+                    </button>
+        
+                    <button class="bg-gray-100 px-4 py-2 rounded-lg" (click)="cancleMachineConfig()">
+                      {{ 'cancel' | transloco }}
+                    </button>
+                  </div>
+        
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'critical-defect-configuration'">
+          <div class="p-3">
+            <div class="flex justify-between items-center text-xl font-semibold rounded-lg mb-1 p-2 px-3">
+              <h3>{{ 'critical_defect_config' | transloco }}</h3>
+              <div class="flex items-center gap-2">
+                <button *ngIf="!showList" type="button" (click)="toggleCriticalDefect()"
+                  [ngClass]="'rounded-full w-11 h-11 flex items-center justify-center text-3xl'"
+                  class="text-white bg-brandColor font-medium text-sm text-center inline-flex items-center hover:shadow-md transition">
+                  +
+                </button>
+              </div>
+            </div>
+            <div *ngIf="!showList" class="w-full">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                <div *ngFor="let data of criticalDefectData; let i = index"
+                  class="flex items-center justify-between border rounded-lg p-2 hover:shadow-md transition-all cursor-pointer">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full border border-gray-300" [style.backgroundColor]="data.color"></div>
+                    <div class="flex flex-col">
+                      <span class="text-black text-sm font-normal">
+                        {{ data.defect_type_name }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <button class="Delete-icon" (click)="openDeleteModalforCriticalDefect(i)"><img src="assets/icons/Trash.svg" alt="" /></button>
+                    <button class="Edit-icon" (click)="editCriticalDefect(data, i)"><img src="assets/icons/Edit.svg" alt="" /></button>
+                  </div>
+                </div>
+                <div *ngIf="criticalDefectData.length === 0" class="col-span-2">
+                  <div class="text-red-600 text-center py-2 text-lg">
+                    {{ 'no_data_found' | transloco }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="showList" class="p-3">
+              <form [formGroup]="criticalDefectForm" class="w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 mb-3 gap-3 mt-3">
+                  <div>
+                    <label class="block text-black text-sm font-bold mb-1">
+                      {{ 'defect_type_name' | transloco }}
+                    </label>
+                    <input type="text" class="p-2 border border-gray-200 rounded-lg w-full"
+                      [placeholder]="'enter_defect_type_name' | transloco" formControlName="defect_type_name" />
+                    <div *ngIf="submitted && criticalDefectF['defect_type_name'].errors">
+                      <div *ngIf="criticalDefectF['defect_type_name'].errors['required']" class="text-red-600 text-sm">
+                        {{ 'defect_type_name_required' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-span-full">
+                    <label class="block text-black text-sm font-bold mb-2">
+                      {{ 'color' | transloco }}
+                    </label>
+                    <div class="flex flex-wrap gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
+                      <div *ngFor="let color of predefinedColors" (click)="criticalDefectForm.get('color').setValue(color)"
+                        class="w-10 h-10 rounded-full cursor-pointer border-2 transition-all hover:scale-110 shadow-sm"
+                        [style.backgroundColor]="color"
+                        [ngClass]="criticalDefectForm.get('color').value === color ? 'border-brandColor scale-110 ring-2 ring-brandColor ring-offset-2' : 'border-white'">
+                      </div>
+
+                      <div class="relative w-10 h-10 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer bg-white transition-all hover:border-brandColor shadow-sm"
+                        [ngClass]="isCustomColorSelected() ? 'border-brandColor scale-110 ring-2 ring-brandColor ring-offset-2' : ''">
+                        <mat-icon *ngIf="!isCustomColorSelected()" class="text-gray-400">colorize</mat-icon>
+                        <div *ngIf="isCustomColorSelected()" class="absolute inset-0 rounded-full"
+                          [style.backgroundColor]="criticalDefectForm.get('color').value">
+                        </div>
+                        <input type="color" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" formControlName="color" />
+                      </div>
+                    </div>
+                    <div *ngIf="submitted && criticalDefectF['color'].errors">
+                      <div *ngIf="criticalDefectF['color'].errors['required']" class="text-red-600 text-sm">
+                        {{ 'color_required' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-center gap-3 items-center mt-6">
+                  <button *ngIf="addEditBtnCriticalDefect == 'Add'" class="brand-button text-white px-4 py-2 rounded-lg" (click)="onCriticalDefectSubmit('Add')">
+                    {{ 'save' | transloco }}
+                  </button>
+                  <button *ngIf="addEditBtnCriticalDefect == 'Edit'" class="brand-button text-white px-4 py-2 rounded-lg flex items-center" (click)="onCriticalDefectSubmit('Edit')">
+                      <img class="w-5 mr-1" src="assets/icons/Update.svg" />
+                    {{ 'update' | transloco }}
+                  </button>
+                  <button class="bg-gray-100 px-4 py-2 rounded-lg" (click)="cancelCriticalDefect()">
+                    {{ 'cancel' | transloco }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'defect-grading-config'">
+          <div *ngIf="!showDefectGradingList" class="p-6">
+            <div [formGroup]="defectGradingForm" (keydown.enter)="onDefectGradingHeaderSave()" class="flex flex-wrap gap-8 mb-10 items-end">
+              <div class="flex flex-col gap-2 min-w-[250px]">
+                <label class="text-black text-lg font-semibold">{{ 'measurement_unit' | transloco }}</label>
+                <select formControlName="measurement_unit" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                  <option value="">{{ 'choose_unit' | transloco }}</option>
+                  <option value="mm">mm</option>
+                  <option value="cm">cm</option>
+                  <option value="inch">inch</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-2 min-w-[250px]">
+                <label class="text-black text-lg font-semibold">{{ 'max_allowable_points' | transloco }} (per 100 mm²)</label>
+                <input type="text" formControlName="max_allowable_points" [placeholder]="'enter_maximum_points' | transloco" class="w-full p-2 border border-gray-300 rounded-lg" />
+                <div class="text-red-500 text-sm mt-1" *ngIf="defectGradingForm.get('max_allowable_points')?.invalid && defectGradingForm.get('max_allowable_points')?.touched">
+                  <span *ngIf="defectGradingForm.get('max_allowable_points')?.hasError('pattern')">
+                    {{ 'numeric_values_only' | transloco }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 mb-6">
+              <h3 class="text-xl font-semibold text-black">{{ 'grading_rules' | transloco }}</h3>
+              <button (click)="toggleDefectGradingView()" 
+                [disabled]="!defectGradingForm.get('measurement_unit')?.value && !defectGradingForm.get('max_allowable_points')?.value"
+                [ngClass]="{'opacity-50 cursor-not-allowed': !defectGradingForm.get('measurement_unit')?.value && !defectGradingForm.get('max_allowable_points')?.value}"
+                class="w-7 h-7 bg-[#073070] text-white rounded-full flex items-center justify-center text-xl font-bold">
+                +
+              </button>
+            </div>
+
+            <div class="overflow-hidden border rounded-lg shadow-sm">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-[#073070] text-white">
+                    <th class="p-4 text-lg text-center font-semibold">{{ 'defect_category' | transloco }}</th>
+                    <th class="p-4 text-lg text-center font-semibold">{{ 'condition' | transloco }}</th>
+                    <th class="p-4 text-lg text-center font-semibold">{{ 'defect_size' | transloco }}</th>
+                    <th class="p-4 text-lg text-center font-semibold">{{ 'points' | transloco }}</th>
+                    <th class="p-4 text-lg text-center font-semibold">{{ 'actions' | transloco }}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-[#f4f7fc]">
+                  <tr *ngFor="let rule of defectGradingRulesData; let i = index">
+                    <td class="p-4">
+                      <div class="border border-gray-300 rounded p-2 bg-white text-center text-gray-600">{{ rule.defect_category }}</div>
+                    </td>
+                    <td class="p-4">
+                      <div class="border border-gray-300 rounded p-2 bg-white text-center text-gray-600">{{ rule.condition }}</div>
+                    </td>
+                    <td class="p-4">
+                      <div class="border border-gray-300 rounded p-2 bg-white text-center text-gray-600">{{ rule.min_defect_size }}{{ rule.condition === '<>' ? '-' + rule.max_defect_size : '' }}</div>
+                    </td>
+                    <td class="p-4">
+                      <div class="border border-gray-300 rounded p-2 bg-white text-center text-gray-600">{{ rule.points }}</div>
+                    </td>
+                    <td class="p-4">
+                      <div class="flex justify-center items-center gap-6">
+                        <button (click)="defectGradingEdit(rule, i)" class="hover:scale-110 transition-transform">
+                          <img src="assets/icons/Edit.svg" class="w-6 h-6" alt="Edit" />
+                        </button>
+                        <button (click)="openDeleteModalForDefectGrading(i)" class="hover:scale-110 transition-transform">
+                          <img src="assets/icons/Trash.svg" class="w-6 h-6" alt="Delete" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="defectGradingRulesData.length === 0">
+                    <td colspan="5" class="p-4 text-center text-red-600 text-lg">
+                      {{ 'no_grading_rules_found' | transloco }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div *ngIf="showDefectGradingList" class="p-6">
+            <form [formGroup]="defectGradingRuleForm" class="w-full">
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+                <div class="flex flex-col gap-1">
+                  <label class="text-black text-sm font-bold">{{ 'defect_category' | transloco }}</label>
+                  <div class="relative">
+                    <input type="text" formControlName="defect_category" [placeholder]="'enter_defect_category' | transloco"
+                      class="w-full p-2.5 border border-gray-400 rounded-md text-gray-500 placeholder-gray-400"
+                      [class.border-red-500]="defectGradingRuleForm.get('defect_category')?.invalid && defectGradingRuleForm.get('defect_category')?.touched" />
+                    <div class="text-red-500 text-xs mt-1" *ngIf="defectGradingRuleForm.get('defect_category')?.invalid && defectGradingRuleForm.get('defect_category')?.touched">
+                      {{ 'defect_category_required' | transloco }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="text-black text-sm font-bold">{{ 'select_condition' | transloco }}</label>
+                  <div class="relative">
+                    <select formControlName="condition" (change)="onDefectGradingConditionChange($event.target.value)" class="w-full p-2.5 border border-gray-400 rounded-md bg-white appearance-none text-gray-500"
+                      [class.border-red-500]="defectGradingRuleForm.get('condition')?.invalid && defectGradingRuleForm.get('condition')?.touched">
+                      <option value="">{{ 'choose_condition' | transloco }}</option>
+                      <option value="<="><=</option>
+                      <option value=">=">>=</option>
+                      <option value="<>"><></option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </div>
+                    <div class="text-red-500 text-xs mt-1" *ngIf="defectGradingRuleForm.get('condition')?.invalid && defectGradingRuleForm.get('condition')?.touched">
+                      {{ 'condition_required' | transloco }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="text-black text-sm font-bold">{{ (defectGradingRuleForm.get('condition').value === '<>' ? 'defect_size_min' : 'defect_size') | transloco }}</label>
+                  <div>
+                    <input type="text" formControlName="min_defect_size" [placeholder]="'enter_defect_size' | transloco"
+                      class="w-full p-2.5 border border-gray-400 rounded-md text-gray-500 placeholder-gray-400"
+                      [class.border-red-500]="defectGradingRuleForm.get('min_defect_size')?.invalid && defectGradingRuleForm.get('min_defect_size')?.touched" />
+                    <div class="text-red-500 text-xs mt-1" *ngIf="defectGradingRuleForm.get('min_defect_size')?.invalid && defectGradingRuleForm.get('min_defect_size')?.touched">
+                      <span *ngIf="defectGradingRuleForm.get('min_defect_size')?.hasError('required')">{{ 'min_defect_size_required' | transloco }}</span>
+                      <span *ngIf="defectGradingRuleForm.get('min_defect_size')?.hasError('pattern')">{{ 'numeric_values_only' | transloco }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1" *ngIf="defectGradingRuleForm.get('condition').value === '<>'">
+                  <label class="text-black text-sm font-bold">{{ 'defect_size_max' | transloco }}</label>
+                  <div>
+                    <input type="text" formControlName="max_defect_size" [placeholder]="'enter_defect_size' | transloco"
+                      class="w-full p-2.5 border border-gray-400 rounded-md text-gray-500 placeholder-gray-400"
+                      [class.border-red-500]="defectGradingRuleForm.get('max_defect_size')?.invalid && defectGradingRuleForm.get('max_defect_size')?.touched" />
+                    <div class="text-red-500 text-xs mt-1" *ngIf="defectGradingRuleForm.get('max_defect_size')?.invalid && defectGradingRuleForm.get('max_defect_size')?.touched">
+                      <span *ngIf="defectGradingRuleForm.get('max_defect_size')?.hasError('required')">{{ 'max_defect_size_required' | transloco }}</span>
+                      <span *ngIf="defectGradingRuleForm.get('max_defect_size')?.hasError('pattern')">{{ 'numeric_values_only' | transloco }}</span>
+                      <span *ngIf="defectGradingRuleForm.get('max_defect_size')?.hasError('lessThan')">{{ 'max_size_must_be_greater' | transloco }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="text-black text-sm font-bold">{{ 'defect_score' | transloco }}</label>
+                  <div>
+                    <input type="text" formControlName="points" [placeholder]="'enter_points' | transloco"
+                      class="w-full p-2.5 border border-gray-400 rounded-md text-gray-500 placeholder-gray-400"
+                      [class.border-red-500]="defectGradingRuleForm.get('points')?.invalid && defectGradingRuleForm.get('points')?.touched" />
+                    <div class="text-red-500 text-xs mt-1" *ngIf="defectGradingRuleForm.get('points')?.invalid && defectGradingRuleForm.get('points')?.touched">
+                      <span *ngIf="defectGradingRuleForm.get('points')?.hasError('required')">{{ 'points_required' | transloco }}</span>
+                      <span *ngIf="defectGradingRuleForm.get('points')?.hasError('pattern')">{{ 'numeric_values_only' | transloco }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-center gap-3 items-center mt-2">
+                <button *ngIf="addEditBtnDefectGrading == 'Add'"
+                  class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                  (click)="saveDefectGradingRule()">
+                  {{ 'save' | transloco }}
+                </button>
+
+                <button *ngIf="addEditBtnDefectGrading == 'Edit'"
+                  class="brand-button text-white px-4 py-2 rounded-lg ml-2 hover:shadow-md flex items-center"
+                  (click)="saveDefectGradingRule()">
+                  <img class="w-5 mr-1" src="assets/icons/Update.svg" alt="" />
+                  {{ 'update' | transloco }}
+                </button>
+
+                <button
+                  class="bg-gray-100 border-gray-100 hover:bg-gray-200 hover:border-gray-200 text-gray-800 px-4 py-2 rounded-lg ml-2"
+                  (click)="cancelDefectGrading()">
+                  {{ 'cancel' | transloco }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div *ngIf="activeTab === 'email-setting'">
+          <div class="mt-6 border-t border-gray-200 pt-6 p-2 px-3">
+            <!-- Filters Section -->
+            <div class="border border-blue-100 rounded-md p-4">
+              <h4 class="text-[#073070] font-semibold mb-3">{{ 'filters' | transloco }}</h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Rolls Status -->
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">{{ 'rolls_status' | transloco }}</label>
+                  <select class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                    <option value="">{{ 'all_status' | transloco }}</option>
+                    <option value="1">{{ 'inspected' | transloco }}</option>
+                    <option value="2">{{ 'reviewed' | transloco }}</option>
+                    <option value="3">{{ 'half_repaired' | transloco }}</option>
+                    <option value="4">{{ 'repaired' | transloco }}</option>
+                  </select>
+                </div>
+
+                <!-- Data Status -->
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">{{ 'data_status' | transloco }}</label>
+                  <select class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                    <option value="">{{ 'all_status' | transloco }}</option>
+                    <option>Approved</option>
+                    <option>Deleted</option>
+                    <option>Pending</option>
+                  </select>
+                </div>
+
+                <!-- Recipe -->
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">{{ 'recipe' | transloco }}</label>
+                  <select class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                    <option value="">{{ 'all_recipes' | transloco }}</option>
+                    <option>Recipe 1</option>
+                    <option>Recipe 2</option>
+                    <option>Recipe 3</option>
+                  </select>
+                </div>
+
+                <!-- User Tag -->
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">{{ 'user_tag' | transloco }}</label>
+                  <select class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                    <option value="">{{ 'all_tags' | transloco }}</option>
+                    <option>Admin</option>
+                    <option>Operator</option>
+                    <option>Supervisor</option>
+                  </select>
+                </div>
+
+                <!-- Time Duration -->
+                <div>
+                  <label class="block text-black text-sm font-bold mb-1">{{ 'time_duration' | transloco }}</label>
+                  <select class="w-full h-12 rounded-md border border-gray-200 px-3 bg-gray-50 text-md">
+                    <option value="">{{ 'select_duration' | transloco }}</option>
+                    <option>{{ 'last_24_hours' | transloco }}</option>
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>This Month</option>
+                    <option>{{ 'custom_range' | transloco }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Delete Modal Start -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'delete_tag_confirmation' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModal()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'action_cannot_be_undone' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteUserTag()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Delete Modal End -->
+<div *ngIf="showDeleteModalforPdf"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'delete_pdf_config_confirmation' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalforPdf()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'action_cannot_be_undone' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalforPdf()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deletePdfGenerationConfig()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDeleteModalforProductionReport"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'delete_pdf_config_confirmation' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalforProductionReport()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'action_cannot_be_undone' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalforProductionReport()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteProductionReportConfig()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDeleteModalForCriticalDefect"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'confirm_delete' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalforCriticalDefect()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'delete_critical_defect_confirmation' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalforCriticalDefect()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteCriticalDefect()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDeleteModalForDefectGrading"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'confirm_delete' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalForDefectGrading()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'delete_grading_rule_confirmation' | transloco }}
+    </div>
+
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalForDefectGrading()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteDefectGradingRule()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDeleteModalforQualitylist"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'delete_quality_code_confirmation' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalforQualitylist()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'action_cannot_be_undone' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalforQualitylist()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteQualityCode()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="showDeleteModalForMachineConfig"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'delete_machine_config_confirmation' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalForMachineConfig()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'action_cannot_be_undone' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalForMachineConfig()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteMachineConfig()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit Modal Start -->
+<div *ngIf="showEditModal"
+     class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+
+  <!-- Modal Container -->
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl overflow-hidden">
+
+    <!-- Modal Header (FIXED) -->
+    <div class="sticky top-0 z-30 flex justify-between items-center border-b px-4 py-2 bg-white">
+      <h4 class="text-lg font-semibold text-black">
+        {{ module_name | titlecase }}
+      </h4>
+      <button
+        (click)="closeEditmodal()"
+        class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Scroll Area -->
+    <div class="max-h-[600px] overflow-y-auto">
+
+      <table class="w-full divide-y divide-gray-200 bg-white">
+
+        <!-- Table Header (FIXED) -->
+        <thead class="sticky top-0 z-20 bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+              {{ 'specification' | transloco }}
+            </th>
+            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">
+              {{ 'allow' | transloco }}
+            </th>
+          </tr>
+        </thead>
+
+        <!-- Table Body (SCROLLS) -->
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let feature of features" class="hover:bg-gray-50">
+            <td class="px-6 py-2 text-gray-800">
+              {{ feature.feature_name }}
+            </td>
+            <td class="px-6 py-2 text-center text-gray-800">
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="sr-only peer"
+                  [checked]="checkedFeatures[feature.feature_id]"
+                  (change)="onFeatureToggle(
+                    $event,
+                    feature.feature_id,
+                    selectedRole,
+                    feature.feature_name
+                  )"
+                />
+                <div
+                  class="relative w-9 h-5 bg-gray-200 rounded-full
+                         peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300
+                         after:content-[''] after:absolute after:top-[1px] after:left-[1px]
+                         after:bg-white after:border after:rounded-full after:h-[18px] after:w-[18px]
+                         after:transition-all peer-checked:after:translate-x-[16px]
+                         peer-checked:bg-blue-600">
+                </div>
+              </label>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Setting Modal Start -->
+<div *ngIf="Setting"
+  class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+  <div class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-center border-b px-4 py-2">
+      <h4 class="text-lg text-black font-semibold">{{ 'set_up' | transloco }}</h4>
+    </div>
+
+    <!-- Modal Body -->
+    <form [formGroup]="Form" (ngSubmit)="onSubmit()">
+      <div class="p-3 overflow-y-auto max-h-full">
+        <div class="grid grid-cols-1 my-2 gap-3">
+          <!-- Repair Table Width -->
+          <div>
+            <label class="block mb-2 font-bold leading-6 text-base uppercase">{{ 'repair_table_width' | transloco }}</label>
+            <input type="text" maxlength="4" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+              #repairwidthTouchKeyboard="ngxTouchKeyboard" (focus)="repairwidthTouchKeyboard.openPanel()"
+              (blur)="repairwidthTouchKeyboard.closePanel()" formControlName="inspection_table_width"
+              (keypress)="onKeyPress($event)"
+              class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3"
+              placeholder="" [ngClass]="{ 'is-invalid': submitted && f['inspection_table_width'].errors }" required />
+            <div *ngIf="submitted && f['inspection_table_width'].errors" class="invalid-feedback">
+              <div *ngIf="f['inspection_table_width'].errors['required']" class="text-red-600">
+                {{ 'repair_table_width_required_msg' | transloco }}
+              </div>
+              <div *ngIf="f.inspection_table_width.errors.pattern" class="text-red-600">{{ 'invalid_input' | transloco }}</div>
+              <div *ngIf="f.inspection_table_width.errors.lessThan" class="text-red-600">
+                {{ 'repair_table_width_greater_0' | transloco }}
+              </div>
+              <div *ngIf="f['inspection_table_width'].errors['max']" class="text-red-600">
+                {{ 'repair_table_width_max_1000' | transloco }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Splicing Offset -->
+          <div>
+            <label class="block mb-2 font-bold leading-6 text-base uppercase">{{ 'splicing_offset' | transloco }}</label>
+            <input type="text" maxlength="4" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+              #spliceTouchKeyboard="ngxTouchKeyboard" (focus)="spliceTouchKeyboard.openPanel()"
+              (blur)="spliceTouchKeyboard.closePanel()" formControlName="splicing_offset"
+              (keypress)="onKeyPress($event)"
+              class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3"
+              [ngClass]="{ 'is-invalid': submitted && f['splicing_offset'].errors }" required />
+            <div *ngIf="submitted && f['splicing_offset'].errors" class="invalid-feedback">
+              <div *ngIf="f['splicing_offset'].errors['required']" class="text-red-600">{{ 'splicing_offset_required_msg' | transloco }}
+              </div>
+              <div *ngIf="f.splicing_offset.errors.pattern" class="text-red-600">{{ 'invalid_input' | transloco }}</div>
+              <div *ngIf="f.splicing_offset.errors.lessThan" class="text-red-600">
+                {{ 'splicing_offset_greater_0' | transloco }}
+              </div>
+              <div *ngIf="f['splicing_offset'].errors['max']" class="text-red-600">
+                {{ 'splicing_offset_max_10000_msg' | transloco }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Repairing Offset -->
+          <div>
+            <label class="block mb-2 font-bold leading-6 text-base uppercase">{{ 'repairing_offset' | transloco }}</label>
+            <input type="text" maxlength="4" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+              #repairOffsetTouchKeyboard="ngxTouchKeyboard" (focus)="repairOffsetTouchKeyboard.openPanel()"
+              (blur)="repairOffsetTouchKeyboard.closePanel()" formControlName="repairing_offset"
+              (keypress)="onKeyPress($event)"
+              class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3"
+              [ngClass]="{ 'is-invalid': submitted && f['repairing_offset'].errors }" required />
+            <div *ngIf="submitted && f['repairing_offset'].errors" class="invalid-feedback">
+              <div *ngIf="f['repairing_offset'].errors['required']" class="text-red-600">{{ 'repairing_offset_required_msg' | transloco }}
+              </div>
+              <div *ngIf="f.repairing_offset.errors.pattern" class="text-red-600">{{ 'invalid_input' | transloco }}</div>
+              <div *ngIf="f.repairing_offset.errors.lessThan" class="text-red-600">
+                {{ 'repairing_offset_greater_0' | transloco }}
+              </div>
+              <div *ngIf="f['repairing_offset'].errors['max']" class="text-red-600">
+                {{ 'repairing_offset_max_1000' | transloco }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Jogging Offset -->
+          <div>
+            <label class="block mb-2 font-bold leading-6 text-base uppercase">{{ 'jogging_offset' | transloco }}</label>
+            <input type="text" maxlength="5" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+              #jogOffsetTouchKeyboard="ngxTouchKeyboard" (focus)="jogOffsetTouchKeyboard.openPanel()"
+              (blur)="jogOffsetTouchKeyboard.closePanel()" formControlName="jogging_offset"
+              (keypress)="onKeyPress($event)"
+              class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3"
+              [ngClass]="{ 'is-invalid': submitted && f['jogging_offset'].errors }" required />
+            <div *ngIf="submitted && f['jogging_offset'].errors" class="invalid-feedback">
+              <div *ngIf="f['jogging_offset'].errors['required']" class="text-red-600">{{ 'jogging_offset_required_msg' | transloco }}</div>
+              <div *ngIf="f.jogging_offset.errors.pattern" class="text-red-600">{{ 'invalid_input' | transloco }}</div>
+              <div *ngIf="f['jogging_offset'].errors['min']" class="text-red-600">
+                {{ 'jogging_offset_min_1000' | transloco }}
+              </div>
+              <div *ngIf="f['jogging_offset'].errors['max']" class="text-red-600">
+                {{ 'jogging_offset_max_10000' | transloco }}
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Repair Machine ID -->
+          <div>
+            <label class="block mb-2 font-bold leading-6 text-base uppercase">{{ 'repair_machine_id' | transloco }}</label>
+            <input readonly type="text" maxlength="10" formControlName="repair_machine_id" (keydown)="NoSpace($event)"
+              class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3"
+              [ngClass]="{ 'is-invalid': submitted && f['repair_machine_id'].errors }" required />
+            <div *ngIf="submitted && f['repair_machine_id'].errors" class="invalid-feedback">
+              <div *ngIf="f['repair_machine_id'].errors['required']" class="text-red-600">
+                {{ 'machine_id_required_msg' | transloco }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="w-full flex items-center justify-center gap-5 mt-4">
+          <button type="submit" class="brand-button font-semibold py-2 px-4 rounded tracking-widest">
+            {{ 'save' | transloco }}
+          </button>
+          <button type="button" (click)="hideSetting()"
+            class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest">
+            {{ 'cancel' | transloco }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Setting Modal End -->
+
+<div *ngIf="showColumnNameModal"
+     class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+
+  <!-- Modal Container -->
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl overflow-hidden">
+
+    <!-- Modal Header (FIXED) -->
+    <div class="sticky top-0 z-30 flex justify-between items-center border-b px-4 py-2 bg-white">
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          [(ngModel)]="selectedAll"
+          (change)="onSelectAllChange()"
+          class="h-4 w-4 cursor-pointer"
+        />
+        <span class="text-sm font-medium">{{ 'select_all' | transloco }}</span>
+      </div>
+
+      <button
+        (click)="closeColumnModal()"
+        class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Scroll Area -->
+    <div class="max-h-[500px] overflow-y-auto">
+
+      <table class="w-full table-fixed border-collapse bg-white">
+      
+        <!-- Table Header -->
+        <thead class="sticky top-0 z-20 bg-gray-100">
+          <tr>
+            <!-- Drag Column -->
+            <th class="w-12 px-3 py-3"></th>
+      
+            <!-- Column Name -->
+            <th class="w-3/4 px-4 py-3 text-left text-sm font-semibold text-gray-700">
+              {{ 'column_name' | transloco }}
+            </th>
+      
+            <!-- Show/Hide   -->
+            <th class="w-1/4 px-4 py-3 text-center text-sm font-semibold text-gray-700">
+              <!-- Show/Hide -->
+              {{ 'show_hide' | transloco }}
+            </th>
+          </tr>
+        </thead>
+      
+        <tbody cdkDropList [cdkDropListData]="columnNameArray" (cdkDropListDropped)="drop($event)"
+          [cdkDropListSortingDisabled]="false">
+          <tr 
+            *ngFor="let col of columnNameArray; let i = index" 
+            cdkDrag 
+            cdkDragBoundary="tbody" 
+            cdkDragLockAxis="y"
+            [cdkDragData]="col"
+            class="hover:bg-gray-50 cursor-move"
+            (click)="onRowClick($event, col)">
+      
+            <!-- Drag Icon Column -->
+            <td class="w-12 px-3 py-2 text-center align-middle">
+              <div class="flex items-center justify-center 
+                  w-8 h-8 
+                  bg-gray-100 
+                  border border-gray-200 
+                  rounded-md 
+                  cursor-move 
+                  hover:bg-gray-200
+                  ">
+      
+                <img src="assets/icons/menu.png" class="w-4 h-4 opacity-60" alt="arrow" />
+              </div>
+            </td>
+      
+            <!-- Column Name -->
+            <td class="w-3/4 px-4 py-2 align-middle">
+      
+              <!-- Normal Text -->
+              <div *ngIf="currentEditingCol !== col" class="cursor-pointer" (dblclick)="enableEdit(col)">
+      
+                <div class="text-gray-800">
+                  {{ col.name }}
+                </div>
+      
+                <!-- Original Name -->
+                <div *ngIf="col?.originalName" class="text-xs text-gray-400 mt-1">
+                  {{col.originalName}}
+                </div>
+      
+              </div>
+      
+              <!-- Input Box -->
+              <div *ngIf="currentEditingCol === col">
+                <input type="text" [(ngModel)]="col.name" (click)="$event.stopPropagation()" (blur)="disableEdit(col)"
+                  (keyup.enter)="disableEdit(col)"
+                  class="w-full px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500" autofocus />
+      
+                <!-- Original Name (Editing Time Bhi Show Hoga) -->
+                <div *ngIf="col?.originalName" class="text-xs text-gray-400 mt-1">
+                  {{col.originalName}}
+                </div>
+              </div>
+      
+            </td>
+      
+            <!-- Allow Column -->
+            <td class="w-1/4 px-4 py-2 align-middle">
+              <div class="flex items-center justify-center gap-3">
+      
+                <!-- Toggle -->
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [checked]="col.checked" (click)="handleToggle($event, col); $event.stopPropagation()"
+                    class="sr-only peer" />
+                  <div class="w-9 h-5 bg-gray-200 rounded-full
+                                peer-checked:bg-blue-600
+                                relative transition-all
+                                after:content-[''] after:absolute after:top-[1px] after:left-[1px]
+                                after:h-[18px] after:w-[18px] after:bg-white after:rounded-full
+                                after:transition-all
+                                peer-checked:after:translate-x-[16px]">
+                  </div>
+                </label>
+      
+                <!-- Sort Icon -->
+                <span class="relative group flex items-center justify-center 
+                              w-8 h-8 rounded-full text-xs cursor-pointer"
+                  [ngClass]="col.key === currentSortColumn ? 'bg-gray-300 text-gray-700' : 'invisible'">
+                  <img src="assets/icons/arrow.svg" class="w-4 h-4 opacity-60" alt="arrow" />
+                </span>
+      
+              </div>
+            </td>
+      
+          </tr>
+        </tbody>
+      
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Setting Modal End -->
+
+<!-- Inspection Machine Delete Popup-->
+<div *ngIf="showDeleteModalForInspectionMachineConfig"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b px-4 py-2">
+      <h4 class="text-lg font-semibold text-black">
+        {{ 'delete_machine_config_confirmation' | transloco }}
+      </h4>
+      <button (click)="closeDeleteModalForInspectionMachineConfig()" class="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="px-4 py-4 text-sm text-gray-700">
+      {{ 'action_cannot_be_undone' | transloco }}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end space-x-2 px-4 py-2 border-t">
+      <button (click)="closeDeleteModalForInspectionMachineConfig()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+        {{ 'cancel' | transloco }}
+      </button>
+      <button (click)="deleteInspectionMachineConfig()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        {{ 'delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+# Ignore Node.js build products
+node_modules/
+uploads/
+mysql_npm_module/
+inhouse_simulation.sqlite3
+mysql_npm_module-dev-v0.2.0/
+.qodo

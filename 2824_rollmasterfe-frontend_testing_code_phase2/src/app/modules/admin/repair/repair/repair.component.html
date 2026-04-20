@@ -1,0 +1,2405 @@
+<div class="margeEdit-container">
+  <div class="relative overflow-x-auto px-2 py-1 w-full Body-height">
+    <div class="w-full flex py-1 justify-between items-center">
+      <div class="flex items-center gap-3 text-xl">
+        <mat-icon
+          svgIcon="heroicons_solid:arrow-left"
+          (click)="navigateBack()"
+          class="font-bold text-gray-900 text-sm cursor-pointer w-4 h-4"
+        ></mat-icon>
+        <h4 class="font-bold">{{Repair_machine_id}}</h4>
+          <button class="brand-button px-3 py-2 min-w-52 text-xl text-white rounded-lg"
+          *ngIf="startButtonId == true && rollRunningStatus && !showInfo"
+          (click)="startMachine('start')">
+            {{ 'start' | transloco }}
+          </button>
+          <button class="bg-rose-600 px-3 py-2 min-w-52 text-xl text-white rounded-lg"
+            (click)="stopMachine()"
+            *ngIf="
+              startButtonId == false &&
+              continueButtonId == false &&
+              rollRunningStatus &&
+              !showInfo &&
+              !repairButtonStatus && !spliceButtonStatus
+              "
+            >
+            {{ 'stop' | transloco }}
+          </button>
+          <button class="brand-button px-3 py-2 min-w-52 text-xl text-white rounded-lg"
+          (click)="startMachine('continue')"
+            *ngIf="
+              continueButtonId == true &&
+              rollRunningStatus && !showInfo
+            "
+          >
+            {{ 'continue' | transloco }}
+          </button>
+      </div>
+      <div class="flex items-center gap-3">
+        <div
+          *ngIf="machineRunningStatus"
+          class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm"
+        >
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              (click)="controlMachine(machine_mode === 'stop' ? 'start' : 'stop')"
+              [disabled]="machineControlLoading"
+              class="inline-flex h-12 min-w-[9.5rem] items-center justify-center rounded-xl px-6 py-3 text-xl font-semibold text-white transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+              [ngClass]="
+                machine_mode === 'stop'
+                  ? 'bg-emerald-600 hover:bg-emerald-500'
+                  : 'bg-rose-600 hover:bg-rose-500'
+              "
+            >
+              {{ (machine_mode === 'stop' ? 'machine_start' : 'machine_stop') | transloco }}
+            </button>
+          </div>
+
+          <div class="h-12 w-px bg-slate-200"></div>
+          
+          <div class="flex items-center gap-4">
+            <h4 class="font-bold text-xl"> {{ 'machine_status' | transloco }}</h4>
+            <button *ngIf="machine_mode == 'stop'"
+              class="text-white px-6 py-2.5 text-base rounded-md bg-red-light transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg active:scale-95">
+              {{ 'stop' | transloco }}
+            </button>
+          
+            <button *ngIf="machine_mode == 'running'"
+              class="text-white px-6 py-2.5 text-base rounded-md bg-green-light transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg active:scale-95">
+              {{ 'running' | transloco }}
+            </button>
+            <button *ngIf="machine_mode == 'jogging'"
+              class="text-white px-6 py-2.5 text-base rounded-md bg-teal-light transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg active:scale-95">
+              {{ 'jogging' | transloco }}
+            </button>
+          
+          </div>
+        </div>
+
+        <!-- <button (click)="toggleInfo()"
+          class="h-14 w-14 flex items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 hover:bg-slate-50">
+          <mat-icon svgIcon="heroicons_solid:information-circle"></mat-icon>
+        </button> -->
+      </div>
+    </div>
+
+    <div *ngIf="showInfo" class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-1">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-1 bg-white rounded-lg shadow-lg overflow-hidden"
+      >
+        <div class="col-span-2 bg-brandColor font-bold text-lg p-2 h-10">
+          <span
+            class="font-bold pt-2 leading-6 text-lg font-semibold upercase-text"
+            >{{ 'roll_info' | transloco }}</span
+          >
+        </div>
+        <div class="ml-2">
+          <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+            {{ 'roll_id' | transloco }}
+          </h6>
+          <p class="pl-3 text-base word-wrap">
+            {{ role_data.customer_roll_id }}
+          </p>
+        </div>
+        <div class="ml-2">
+          <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+            {{ 'gsm' | transloco }}
+          </h6>
+          <p class="pl-3 text-base word-wrap">{{ role_data.gsm }}</p>
+        </div>
+        <div class="ml-2">
+          <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+            {{ 'roll_length' | transloco }}
+          </h6>
+          <p class="pl-3 text-base word-wrap">
+            {{ role_data.inspected_length | number : "1.2-2" }} {{ 'meter' | transloco }}
+          </p>
+        </div>
+        <div class="ml-2">
+          <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+            {{ 'total_defects' | transloco }}
+          </h6>
+          <p class="pl-3 text-base word-wrap">{{ role_data.defect_count }}</p>
+        </div>
+        <div class="ml-2">
+          <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+            {{ 'width' | transloco }}
+          </h6>
+          <p class="pl-3 text-base word-wrap">
+            {{ role_data.width | number : "1.2-2" }} {{ 'mm' | transloco }}
+          </p>
+        </div>
+        <div class="col-span-2 ml-2 pr-2 pb-2 flex justify-center gap-2">
+          <button
+            *ngIf="
+              doneButtonVisible &&
+              doneRepairStatus
+            "
+            (click)="update_roll()"
+            class="bg-neutral-800 hover:bg-neutral-700 px-3 py-2 w-1/2 text-xl text-white rounded-lg"
+          >
+            {{ 'done' | transloco }}
+          </button>
+          <button
+            (click)="startMachine('start')"
+            *ngIf="startButtonId == true && rollRunningStatus"
+            class="brand-button px-3 py-2 w-1/2 text-xl text-white rounded-lg mb-2"
+          >
+            {{ 'start' | transloco }}
+          </button>
+          <button
+            (click)="stopMachine()"
+            *ngIf="
+              startButtonId == false &&
+              continueButtonId == false &&
+              rollRunningStatus && !repairButtonStatus && !spliceButtonStatus && !doneButtonVisible
+            "
+            class="px-3 py-2 w-1/2 text-xl text-white bg-rose-600 rounded-lg"
+          >
+            {{ 'stop' | transloco }}
+          </button>
+          <button
+            (click)="startMachine('continue')"
+            *ngIf="
+              continueButtonId == true &&
+              rollRunningStatus
+            "
+            class="brand-button px-3 py-2 w-1/2 text-xl text-white rounded-lg mb-2"
+          >
+            {{ 'continue' | transloco }}
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-lg shadow-lg overflow-hidden col-span-2 relative"
+      >
+        <!-- Header -->
+        <div class="bg-brandColor text-white px-4 py-2">
+          <span class="font-semibold text-lg">{{ 'repair_info' | transloco }}</span>
+        </div>
+
+        <!-- Body -->
+        <div class="grid grid-cols-3 p-3 gap-x-6 gap-y-2 text-sm">
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'current_meter' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ current_repair_meter | number : "1.2-2" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'total_defect_approved' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+               {{ apporvedDefectCount || "0" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'remaining_defect_count' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ remainingDefectCount  || "0" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'current_speed' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ avg_speed || "0" }} {{ 'meter/min' | transloco }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'total_repaired' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ repairCount || "0" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'total_override' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+               {{ overrideCount || "0" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'next_stop_remaining' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ allSpliceDone && allRepairDone ? "0.00" : next_stop_at | number : "1.2-2" }}/
+              {{ allSpliceDone && allRepairDone ? "0.00" :
+                remaining_meter | number : "1.2-2"
+              }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              Remaining Distance (PLC)
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ remaining_distance_to_stop | number : "1.2-2" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'defect_type_operation' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ next_defect_type || "Scratch" }}/{{
+                next_operation || "Manual"
+              }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'total_defects_splice' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ spliceCount || "0" }}
+            </p>
+          </div>
+
+          <div>
+            <h6 class="font-semibold text-md border-l-4 border-indigo-500 pl-3">
+              {{ 'total_splice_meter' | transloco }}
+            </h6>
+            <p class="pl-3 text-base text-gray-700">
+              {{ totalSpliceMeter || "0" }}
+            </p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    <div class="w-full">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+        <div class="col-span-1 bg-brandColor">
+          <h4 class="font-bold text-lg p-2">{{ 'map' | transloco }}</h4>
+        </div>
+        <div class="bg-brandColor col-span-2">
+          <h4 class="font-bold text-lg p-2">{{ 'defect_crop_images' | transloco }}</h4>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3" >
+        <div class="col-span-1 CanvasBox border-4" [style.height]="!showInfo ? 'calc(100vh - 13.5rem)' : 'calc(100vh - 28.5rem)'">
+          <div class="flex-1">
+            <div
+              echarts
+              [options]="chartOptionLine"
+              class="w-full"
+              [style.height]="!showInfo ? 'calc(100vh - 13.9rem)' : 'calc(100vh - 28.9rem)'"
+            ></div>
+          </div>
+        </div>
+        <div class="col-span-2 w-full rounded overflow-hidden shadow bg-white">
+          <div
+            class="w-full flex justify-between items-center pl-4 md:pr-6 pr-4 py-2"
+          >
+            <!-- Left side arrows -->
+
+            <div class="flex items-center gap-3">
+              <!-- Previous button -->
+
+              <div
+                *ngIf="
+                  spliceDefectStatus &&
+                  startButtonId == false &&
+                  continueButtonId == false &&
+                  spliceButtonStatus
+                "
+                class="flex flex-col items-center"
+              >
+                <button matTooltip="Go to Correct" matTooltipPosition="above" class="w-16 h-16 flex items-center justify-center rounded-full border border-gray-300
+                  transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-lg
+                  active:scale-95" [ngClass]="correctionActive ? 'bg-green-500 text-white' : 'bg-white'"
+                  (click)="toggleCommand('correctioncommand')">
+                  <img class="w-10" src="assets/icons/Dubble-arrow-right.svg" alt="Go" />
+                </button>
+
+                <span class="text-xs font-medium text-gray-800 mt-1"
+                  >{{ 'correct' | transloco }}</span
+                >
+              </div>
+
+              <!-- Next button -->
+
+              <div
+                *ngIf="
+                  spliceDefectStatus &&
+                  startButtonId == false &&
+                  continueButtonId == false &&
+                  spliceButtonStatus
+                "
+                class="flex flex-col items-center"
+              >
+                <button matTooltip="Forward Machine" matTooltipPosition="above" class="w-14 h-14 flex items-center justify-center rounded-full border border-gray-300
+                  transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-lg
+                  active:scale-95" [ngClass]="forwardActive ? 'bg-green-500 text-white' : 'bg-white'"
+                  (click)="toggleCommand('forwardmachine')">
+                  <img class="w-8" src="assets/icons/Dubble-arrow-right.svg" alt="Forward" />
+                </button>
+
+                <span class="text-xs font-medium text-gray-800 mt-1"
+                  >{{ 'forward' | transloco }}</span
+                >
+              </div>
+            </div>
+            <div class="flex gap-3 items-center">
+              <div class="flex gap-4 items-center">
+                <input
+                  *ngIf="
+                    spliceDefectStatus &&
+                    startButtonId == false &&
+                    continueButtonId == false &&
+                    spliceButtonStatus
+                  "
+                  type="number"
+                  class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#073070]"
+                  [value]="splice_meter"
+                  readonly
+                />
+                <button
+                  *ngIf="
+                    spliceDefectStatus &&
+                    startButtonId == false &&
+                    continueButtonId == false &&
+                    spliceButtonStatus
+                  "
+                  class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 px-4 rounded md:w-20 h-fit"
+                  (click)="splice_repair_defect(2)"
+                  [disabled]="buttonDisable"
+                >
+                  <span class="hidden md:block">{{ 'splice' | transloco }}</span>
+                  <span class="flex md:hidden"
+                    ><mat-icon
+                      svgIcon="heroicons_solid:trash"
+                      class="text-white"
+                    ></mat-icon
+                  ></span>
+                </button>
+              </div>
+
+              <!-- no-checkbox-selected-for-splice-popup-start -->
+              <div
+                *ngIf="selectCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4"
+                >
+                  <!-- modal header -->
+                  <div
+                    class="flex flex-col items-center justify-between px-4 py-2"
+                  >
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      {{ 'please_select_at_least_one_defect' | transloco }}
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button
+                      (click)="closeCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1"
+                    >
+                      {{ 'ok' | transloco }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- no-checkbox-selected-for-splice-popup-end-->
+              <!-- splice pop-up start here -->
+  
+              <!-- Show Defect Popup -->
+              <div
+                *ngIf="showDefectPopup"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-2/3 lg:w-3/4 xl:w-4/5 shadow-lg p-4 flex flex-col items-center"
+                  style="height: auto; max-height: 95vh"
+                >
+                  <div class="flex justify-end w-full">
+                    <button
+                      (click)="closeDefectImagePopup()"
+                      class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <div
+                    class="p-3 flex flex-col justify-center items-center gap-4 w-full"
+                  >
+                    <div
+                      class="image-container flex justify-center items-center w-full overflow-hidden"
+                      (wheel)="zoomImage($event)"
+                      (mousedown)="onMouseDown($event)"
+                      (mousemove)="onMouseMove($event)"
+                      (mouseup)="onMouseUp()"
+                      (mouseleave)="onMouseUp()"
+                      style="height: auto; position: relative"
+                    >
+                      <!-- Wrapper that will be zoomed & panned -->
+                      <div
+                        class="relative"
+                        [style.transform]="
+                          'translate(' +
+                          pointX +
+                          'px,' +
+                          pointY +
+                          'px) scale(' +
+                          zoomLevel +
+                          ')'
+                        "
+                        style="transform-origin: 0 0"
+                      >
+                        <!-- Main Image -->
+                        <img
+                          [src]="
+                            imagebasepath + popupDefectData.full_image_path
+                          "
+                          (load)="onImageLoad($event)"
+                          style="height: auto; max-height: 80vh"
+                          class="border-2 border-gray-50 object-contain"
+                        />
+
+                        <!-- Black box overlay for defect area -->
+                        <div
+                          *ngIf="
+                            popupDefectData.defect_top_left_x_mm &&
+                            popupDefectData.defect_top_left_y_mm
+                          "
+                          [ngStyle]="{
+                            position: 'absolute',
+                            left:
+                              (popupDefectData.defect_top_left_x_px /
+                                imageWidth) *
+                                100 +
+                              '%',
+                            top:
+                              (popupDefectData.defect_top_left_y_px /
+                                imageHeight) *
+                                100 +
+                              '%',
+                            width:
+                              (popupDefectData.defect_width_px / imageWidth) *
+                                100 +
+                              '%',
+                            height:
+                              (popupDefectData.defect_height_px / imageHeight) *
+                                100 +
+                              '%',
+                            border: '2px solid red',
+                            background: 'rgba(0,0,0,0.3)',
+                            pointerEvents: 'none'
+                          }"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="flex items-center w-full bg-brandColor border-b"
+                    >
+                      <div class="bg-brandColor p-2">
+                        <p class="font-bold text-base">
+                          D{{ popupDefectData.defect_id }}
+                        </p>
+                      </div>
+                      <div
+                        class="brand-button flex items-center gap-2 bg-brandColor p-2 truncate h-full"
+                      >
+                        <p class="font-bold text-base">
+                          {{
+                            popupDefectData.defect_top_left_x_mm / metercal
+                              | number : "1.2-2"
+                          }},
+                          {{
+                            totalmeter -
+                              (popupDefectData.defect_top_left_y_mm / metercal +
+                                popupDefectData.defect_height_mm / metercal) +
+                              config_data.splicing_offset / metercal
+                              | number : "1.2-2"
+                          }}
+                        </p>
+                        <!-- ------ -->
+                        <p class="font-bold text-base">
+                          ({{
+                            popupDefectData.defect_width_mm | number : "1.2-2"
+                          }}
+                          X
+                          {{
+                            popupDefectData.defect_height_mm | number : "1.2-2"
+                          }})
+                        </p>
+                        <!-- -------  -->
+                        <p class="font-bold text-base">
+                          Area:
+                          {{
+                            popupDefectData.defect_width_mm *
+                              popupDefectData.defect_height_mm
+                              | number : "1.0-0"
+                          }}
+                        </p>
+                      </div>
+                      <div
+                        class="flex items-center gap-2 bg-brandColor p-2 truncate"
+                      >
+                        <p class="font-bold text-base">
+                          {{ popupDefectData.defect_type }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- model end -->
+              <!-- setting modal start -->
+
+              <!-- modal start -->
+              <div
+                *ngIf="Setting"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2"
+                >
+                  <!-- modal header -->
+                  <div
+                    class="flex items-center justify-center border-b px-4 py-2"
+                  >
+                    <h4 class="text-lg text-black font-semibold">{{ 'set_up' | transloco }}</h4>
+                  </div>
+                  <!-- modal body -->
+                  <form [formGroup]="Form" (ngSubmit)="onSubmit()">
+                    <div class="p-3 overflow-y-auto max-h-full">
+                      <div class="grid grid-cols-1 my-2 gap-3">
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            {{ 'repair_table_width' | transloco }}</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="4"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #repairwidthTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="repairwidthTouchKeyboard.openPanel()"
+                            (blur)="repairwidthTouchKeyboard.closePanel()"
+                            formControlName="inspection_table_width"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['inspection_table_width'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="
+                              submitted && f['inspection_table_width'].errors
+                            "
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="
+                                f['inspection_table_width'].errors['required']
+                              "
+                              class="text-red-600"
+                            >
+                              {{ 'repair_table_width_required_msg' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f.inspection_table_width.errors.pattern"
+                              class="text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="
+                                f.inspection_table_width.errors.lessThan &&
+                                !f.inspection_table_width.errors.required
+                              "
+                              class="text-red-600"
+                            >
+                              {{ 'repair_table_width_greater_0' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f['inspection_table_width'].errors['max']"
+                              class="text-red-600"
+                            >
+                              {{ 'repair_table_width_max_1000' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            {{ 'splicing_offset' | transloco }}</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="4"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #sliceTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="sliceTouchKeyboard.openPanel()"
+                            (blur)="sliceTouchKeyboard.closePanel()"
+                            formControlName="splicing_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['splicing_offset'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['splicing_offset'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['splicing_offset'].errors['required']"
+                              class="text-red-600"
+                            >
+                              {{ 'splicing_offset_required_msg' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f.splicing_offset.errors.pattern"
+                              class="text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="
+                                f.splicing_offset.errors.lessThan &&
+                                !f.splicing_offset.errors.required
+                              "
+                              class="text-red-600"
+                            >
+                              {{ 'splicing_offset_greater_0' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f['splicing_offset'].errors['max']"
+                              class="text-red-600"
+                            >
+                              {{ 'splicing_offset_max_1000' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            {{ 'repairing_offset' | transloco }}</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="4"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #repairOffsetTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="repairOffsetTouchKeyboard.openPanel()"
+                            (blur)="repairOffsetTouchKeyboard.closePanel()"
+                            formControlName="repairing_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['repairing_offset'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['repairing_offset'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['repairing_offset'].errors['required']"
+                              class="text-red-600"
+                            >
+                              {{ 'repairing_offset_required_msg' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f.repairing_offset.errors.pattern"
+                              class="text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="
+                                f.repairing_offset.errors.lessThan &&
+                                !f.repairing_offset.errors.required
+                              "
+                              class="text-red-600"
+                            >
+                              {{ 'repairing_offset_greater_0' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f['repairing_offset'].errors['max']"
+                              class="text-red-600"
+                            >
+                              {{ 'repairing_offset_max_1000' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            {{ 'jogging_offset' | transloco }}</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="5"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #jogOffsetTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="jogOffsetTouchKeyboard.openPanel()"
+                            (blur)="jogOffsetTouchKeyboard.closePanel()"
+                            formControlName="jogging_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['jogging_offset'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['jogging_offset'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['jogging_offset'].errors['required']"
+                              class="text-red-600"
+                            >
+                              {{ 'jogging_offset_required_msg' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f.jogging_offset.errors.pattern"
+                              class="text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f['jogging_offset'].errors['min']"
+                              class="text-red-600"
+                            >
+                              {{ 'jogging_offset_min_1000' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f['jogging_offset'].errors['max']"
+                              class="text-red-600"
+                            >
+                              {{ 'jogging_offset_max_10000' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            {{ 'correction_factor' | transloco }}</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="6"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #correFactTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="correFactTouchKeyboard.openPanel()"
+                            (blur)="correFactTouchKeyboard.closePanel()"
+                            formControlName="correction_factor"
+                            (keypress)="onKeyPress($event, true)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid': f['correction_factor'].errors
+                            }"
+                          />
+                          <div
+                            *ngIf="f['correction_factor'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f.correction_factor.errors.pattern"
+                              class="text-red-600"
+                            >
+                              Invalid Input
+                            </div>
+                            <div
+                              *ngIf="f['correction_factor'].errors['min']"
+                              class="text-red-600"
+                            >
+                              {{ 'correction_factor_min_minus_10000' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="f['correction_factor'].errors['max']"
+                              class="text-red-600"
+                            >
+                              {{ 'correction_factor_max_10000' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            {{ 'repair_machine_id' | transloco }}</label
+                          >
+                          <input
+                            readonly
+                            type="text"
+                            maxlength="10"
+                            formControlName="repair_machine_id"
+                            (keydown)="NoSpace($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['repair_machine_id'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['repair_machine_id'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['repair_machine_id'].errors['required']"
+                              class="text-red-600"
+                            >
+                              {{ 'machine_id_required' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="w-full flex items-center justify-center gap-5"
+                      >
+                        <button
+                          type="submit"
+                          class="brand-button font-semibold py-2 px-4 rounded tracking-widest"
+                        >
+                          {{ 'save' | transloco }}
+                        </button>
+                        <button
+                          (click)="hideSetting()"
+                          class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                        >
+                          {{ 'cancel' | transloco }}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- modal end -->
+
+              <!-- setting modal end -->
+            </div>
+          </div>
+          <div class="DefectContainer" [style.height]="!showInfo ? (!spliceButtonStatus ? ( startButtonId == false &&
+          continueButtonId == false ? 'calc(100vh - 20rem)' : 'calc(100vh - 14.8rem)'): ( startButtonId == false &&
+          continueButtonId == false ? 'calc(100vh -  20rem)' : 'calc(100vh - 14.8rem)')): (!spliceButtonStatus ? ( startButtonId == false &&
+          continueButtonId == false ? 'calc(100vh - 35rem)' : 'calc(100vh - 29.5rem)'): ( startButtonId == false &&
+          continueButtonId == false ? 'calc(100vh -  35rem)' : 'calc(100vh - 29.5rem)'))">
+            <div class="grid grid-cols-2 px-4 py-2 gap-3">
+              <div
+                class="rounded-lg overflow-hidden"
+                *ngFor="let defect of AllDefectsData"
+              >
+                <div
+                  class="DefectBox relative"
+                  style="border: 2px solid royalblue"
+                >
+                  <img
+                    alt="defect image"
+                    (click)="checboxchecked(defect.defect_id)"
+                    (dblclick)="imagePopupOpen(defect)"
+                    class="h-36"
+                    src="{{ imagebasepath + defect.cropped_image_path }}"
+                    width="100%"
+                    alt=""
+                  />
+                  <label class="absolute right-0 top-0 mr-2 mt-2 z-10">
+                    <input
+                      type="checkbox"
+                      class="bg-blue-950 h-4 w-4 cursor-pointer"
+                      (change)="onCheckboxChange(defect.defect_id)"
+                      [checked]="isChecked(item?.defect_id)"
+                      id="checkbox_{{ defect.defect_id }}"
+                    />
+                  </label>
+                </div>
+                <div class="flex items-center w-full bg-brandColor">
+                  <div class="bg-brandColor p-2">
+                    <p class="font-bold text-base-defect">
+                      D{{ defect.defect_id }}
+                    </p>
+                  </div>
+                  <div
+                    class="brand-button p-2"
+                  >
+                    <p class="font-bold text-base-defect">
+                      {{
+                        defect.defect_top_left_x_mm / metercal
+                        | number : "1.2-2"
+                      }},
+                      {{
+                        totalmeter -
+                          (defect.defect_top_left_y_mm / metercal +
+                            defect.defect_height_mm / metercal) +
+                          config_data.repairing_offset / metercal
+                          | number : "1.2-2"
+                      }}
+                    </p>
+                  </div>
+                  <div class="bg-brandColor p-2">
+                    <p class="font-bold text-base-defect">
+                      {{ defect.defect_type }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="
+            repairDefectStatus &&
+            startButtonId == false &&
+            continueButtonId == false &&
+            repairDefectrData.length > 0 &&
+            repairButtonStatus
+          " class="fixed inset-0 z-[222] flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white w-[80vw] max-w-5xl rounded-2xl shadow-lg overflow-auto">
+        <!-- modal header -->
+        <div class="flex items-center justify-between p-4 border-b">
+          <h4 class="text-xl font-semibold text-black">Crop Images</h4>
+    
+        </div>
+    
+        <!-- modal body -->
+    
+        <div class="w-full rounded overflow-hidden shadow bg-white px-4 py-2" style="min-height: calc(100vh - 8rem);">
+          <div class="flex flex-1 overflow-hidden gap-4">
+            <!-- Canvas Section -->
+            <div class="w-2/4 bg-gray-100 flex flex-col justify-between border-r relative">
+              <!-- Chart Section -->
+              <div *ngIf="repairChartOptionStatus" class="flex flex-col h-full">
+                <div class="flex flex-1 items-center">
+    
+                  <div class="flex-1" style="height: calc(100dvh - 30.5rem)">
+                    <div echarts [options]="repairChartOption" class="w-full h-full"></div>
+                  </div>
+                </div>
+    
+    
+              </div>
+            </div>
+            <div class="image-container flex justify-center items-center w-full overflow-hidden"
+              (wheel)="mergedZoom($event)" (mousedown)="mergedMouseDown($event)" (mousemove)="mergedMouseMove($event)"
+              (mouseup)="mergedMouseUp()" (mouseleave)="mergedMouseUp()">
+    
+              <div class="relative"
+                [style.transform]="'translate(' + mergedX + 'px,' + mergedY + 'px) scale(' + mergedZoomLevel + ')'"
+                [style.transform-origin]="mergedOrigin">
+    
+                <img [src]="imagebasepath + repairDefectrData[repairImageIndex].full_image_path"
+                  (load)="onMergedImageLoad($event)" class="object-contain max-w-full max-h-full" />
+    
+                <!-- defect box -->
+                <div *ngIf="repairDefectrData[repairImageIndex].defect_top_left_x_px" class="absolute" [ngStyle]="{
+                    left: (repairDefectrData[repairImageIndex].defect_top_left_x_px / imageWidth) * 100 + '%',
+                    top: (repairDefectrData[repairImageIndex].defect_top_left_y_px / imageHeight) * 100 + '%',
+                    width: (repairDefectrData[repairImageIndex].defect_width_px / imageWidth) * 100 + '%',
+                    height: (repairDefectrData[repairImageIndex].defect_height_px / imageHeight) * 100 + '%',
+                    border: '2px solid red'
+                 }">
+                </div>
+    
+              </div>
+            </div>
+    
+    
+          </div>
+    
+          <!-- Bottom Slider Section -->
+          <div class="relative px-14 py-2 rounded-lg mt-3">
+            <!-- Scroll Buttons -->
+            <button (click)="scrollLeft()"
+              class="w-16 h-16 absolute left-0 top-1/2 -translate-y-1/2 bg-brandColor shadow-lg rounded-full p-2 mx-2 z-10 flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl hover:bg-opacity-90 active:scale-95">
+              <mat-icon class="text-5xl text-white transition-transform duration-300 ease-in-out group-hover:-translate-x-1">
+                chevron_left
+              </mat-icon>
+            </button>
+    
+            <!-- Slider Content -->
+            <div class="overflow-x-auto no-scrollbar flex gap-3 px-14 scroll-snap-x" #cardSlider
+              (mousedown)="startDragging($event)" (mouseup)="stopDragging($event)" (mouseleave)="stopDragging($event)"
+              (mousemove)="onDrag($event)">
+              <!-- Defect Card -->
+              <div *ngFor="let defect of repairDefectrData; let i = index"
+                class="w-[250px] rounded-lg shadow border border-gray-300 flex-shrink-0 hover:shadow-md transition-all cursor-pointer scroll-snap-item slider-card"
+                (dblclick)="focusOnElementByKey(defect.defect_id, defect.id)">
+                <div class="DefectBox relative" style="border: 2px solid royalblue">
+                  <img alt="defect image" (click)="checboxchecked(defect.defect_id)" (dblclick)="onRepairImageLoad(i)"
+                    class="h-[180px] w-full object-contain" [src]="imagebasepath + defect.cropped_image_path" />
+                  <label class="absolute right-0 top-0 mr-2 mt-2 z-10">
+                    <input type="checkbox" class="bg-blue-950 h-4 w-4 cursor-pointer"
+                      (change)="onCheckboxChange(defect.defect_id)" [checked]="isChecked(defect?.defect_id)"
+                      id="checkbox_{{ defect.defect_id }}" />
+                  </label>
+                </div>
+    
+                <!-- Defect Info -->
+                <div class="flex items-center bg-brandColor  text-xs">
+                  <span class="font-bold px-2 text-xs">D{{ defect.defect_id }}</span>
+    
+                  <div
+                    class="brand-button p-2"
+                  >
+                    <p class="font-bold text-xs"> 
+                      {{
+                        defect.defect_top_left_x_mm / metercal
+                        | number : "1.2-2"
+                      }},
+                      {{
+                        totalmeter -
+                          (defect.defect_top_left_y_mm / metercal +
+                            defect.defect_height_mm / metercal) +
+                          config_data.repairing_offset / metercal
+                          | number : "1.2-2"
+                      }}
+                    </p>
+                  </div>
+    
+                  <span class="font-bold px-2 text-xs ml-auto">
+                    {{ defect.defect_type }}
+                  </span>
+                </div>
+              </div>
+              <!-- End Defect Card -->
+            </div>
+    
+            <!-- Right Scroll Button -->
+            <button (click)="scrollRight()"
+              class="w-16 h-16 absolute right-0 top-1/2 -translate-y-1/2 bg-brandColor shadow-lg rounded-full p-2 mx-2 z-10 flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl hover:bg-opacity-90 active:scale-95">
+              <mat-icon
+                class="text-5xl text-white transition-transform duration-300 ease-in-out group-hover:-translate-x-1">chevron_right</mat-icon>
+            </button>
+          </div>
+          <div class="w-full pt-2">
+            <!-- Main Content -->
+    
+            <div class="flex gap-3">
+              <div *ngIf="ignoreCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+                <div class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4">
+                  <!-- modal header -->
+                  <div class="flex flex-col items-center justify-between px-4 py-2">
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      Please select at least one defect.
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+    
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button (click)="closeIgnoreCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1">
+                      OK
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- ignore pop-up start here -->
+            
+              <div class="flex justify-between items-center w-full">
+                <!-- Left side arrows -->
+                <div class="flex items-center gap-3">
+                  <!-- Previous button -->
+                  <div class="flex flex-col items-center">
+                  <button matTooltip="Go to Correct" matTooltipPosition="above" class="w-16 h-16 flex items-center justify-center rounded-full border border-gray-300
+                    transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-lg
+                    active:scale-95" [ngClass]="correctionActive ? 'bg-green-500 text-white' : 'bg-white'"
+                    (click)="toggleCommand('correctioncommand')">
+                    <img class="w-10" src="assets/icons/Dubble-arrow-right.svg" alt="Go" />
+                  </button>
+                    <span class="text-md font-medium text-gray-800 mt-1">Correct</span>
+                  </div>
+                </div>
+    
+                <!-- Center buttons -->
+                <div class="flex gap-4 items-center">
+                  <div class="flex gap-4 items-center">
+                    <button *ngIf="repairDefectStatus" (click)="splice_repair_defect(1)"
+                      class="brand-button font-semibold text-white py-4 px-4 rounded tracking-widest min-w-52 text-[18px]" [disabled]="buttonDisable">
+                      {{ repair | transloco }}
+                    </button>
+    
+                    <button *ngIf="repairDefectStatus" (click)="showOverrideModal()"
+                      class="bg-brandColor font-semibold text-white py-4 px-4 rounded tracking-widest min-w-52 text-[18px]" [disabled]="buttonDisable">
+                      {{ override | transloco }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+    
+              <!-- no-checkbox-selected-for-splice-popup-start -->
+              <div *ngIf="selectCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+                <div class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4">
+                  <!-- modal header -->
+                  <div class="flex flex-col items-center justify-between px-4 py-2">
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      Please select at least one defect.
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+    
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button (click)="closeCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1">
+                      OK
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- no-checkbox-selected-for-splice-popup-end-->
+              <!-- splice pop-up start here -->
+              <!-- modal start -->
+              <!-- modal end -->
+    
+              <!-- no-checkbox-selected-for-repair-popup-start -->
+              <div *ngIf="repairCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+                <div class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4">
+                  <!-- modal header -->
+                  <div class="flex flex-col items-center justify-between px-4 py-2">
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      Please select at least one defect.
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button (click)="closeRepairCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1">
+                      OK
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- no-checkbox-selected-for-repair-popup-end-->
+              <!-- merge pop-up start here -->
+              <!-- modal start -->
+              <div *ngIf="showModal1"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+                <div class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2">
+                  <!-- modal header -->
+                  <div class="flex items-center justify-between border-b px-4 py-2">
+                    <h4 class="text-lg text-black font-semibold">
+                      Repair Defect
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <h1 class="text-lg font-semibold text-black mb-2">
+                      Are you sure you want to repair the selected defect?
+                    </h1>
+                    <div *ngIf="suggetionForDeleteDefectStatus" class="flex items-center gap-2 mb-4 font-semibold">
+                      <input type="checkbox" class="bg-blue-950 h-4 w-4 cursor-pointer" [(ngModel)]="suggestForDeletion" />
+                      Suggest for deletion
+                    </div>
+                    <div class="w-full flex items-center justify-center md:justify-start gap-5 mt-2">
+                      <button (click)="splice_repair_defect(1)"
+                        class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest">
+                        Repair
+                      </button>
+                      <button (click)="closeBoxModalRepair()"
+                        class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Override Defect Confirmation Modal -->
+              <div *ngIf="showOverrideConfirm"
+                class="modal h-screen w-full p-4 fixed z-[230] left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+                <div class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2">
+                  <!-- modal header -->
+                  <div class="flex items-center justify-between border-b px-4 py-2">
+                    <h4 class="text-lg text-black font-semibold">
+                      {{override_defect | transloco}}
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <h1 class="text-lg font-semibold text-black mb-4">
+                      {{ are_you_sure_you_want_to_override_the_selected_defect | transloco }}
+                    </h1>
+                    <div class="w-full flex items-center justify-center md:justify-start gap-5 mt-2">
+                      <button (click)="confirmOverride()"
+                        class="bg-brandColor font-semibold text-white py-2 px-4 border border-transparent rounded tracking-widest">
+                        {{ override | transloco }}
+                      </button>
+                      <button (click)="closeOverrideModal()"
+                        class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest">
+                        {{ cancel | transloco }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+              <!-- modal start -->
+              <div *ngIf="Setting"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+                <div class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2">
+                  <!-- modal header -->
+                  <div class="flex items-center justify-center border-b px-4 py-2">
+                    <h4 class="text-lg text-black font-semibold">Set Up</h4>
+                  </div>
+                  <!-- modal body -->
+                  <form [formGroup]="Form" (ngSubmit)="onSubmit()">
+                    <div class="p-3 overflow-y-auto max-h-full">
+                      <div class="grid grid-cols-1 my-2 gap-3">
+                        <div class="">
+                          <label class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text">
+                            Repair Table width (mm)</label>
+                          <input type="text" maxlength="4" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+                            #repairwidthTouchKeyboard="ngxTouchKeyboard" (focus)="repairwidthTouchKeyboard.openPanel()"
+                            (blur)="repairwidthTouchKeyboard.closePanel()" formControlName="inspection_table_width"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder="" [ngClass]="{
+                                      'is-invalid':
+                                        submitted && f['inspection_table_width'].errors
+                                    }" required />
+                          <div *ngIf="
+                                      submitted && f['inspection_table_width'].errors
+                                    " class="invalid-feedback">
+                            <div *ngIf="
+                                        f['inspection_table_width'].errors['required']
+                                      " class="text-red-600">
+                              Repair Table Width is required
+                            </div>
+                            <div *ngIf="f.inspection_table_width.errors.pattern" class="text-red-600">
+                              Invalid Input
+                            </div>
+                            <div *ngIf="
+                                        f.inspection_table_width.errors.lessThan &&
+                                        !f.inspection_table_width.errors.required
+                                      " class="text-red-600">
+                              Repair Table Width must be Greater than 0
+                            </div>
+                            <div *ngIf="f['inspection_table_width'].errors['max']" class="text-red-600">
+                              Repair Table Width cannot exceed 1000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text">
+                            Splicing Offset (mm)</label>
+                          <input type="text" maxlength="4" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+                            #sliceTouchKeyboard="ngxTouchKeyboard" (focus)="sliceTouchKeyboard.openPanel()"
+                            (blur)="sliceTouchKeyboard.closePanel()" formControlName="splicing_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder="" [ngClass]="{
+                                      'is-invalid':
+                                        submitted && f['splicing_offset'].errors
+                                    }" required />
+                          <div *ngIf="submitted && f['splicing_offset'].errors" class="invalid-feedback">
+                            <div *ngIf="f['splicing_offset'].errors['required']" class="text-red-600">
+                              Splicing Offset is required
+                            </div>
+                            <div *ngIf="f.splicing_offset.errors.pattern" class="text-red-600">
+                              Invalid Input
+                            </div>
+                            <div *ngIf="
+                                        f.splicing_offset.errors.lessThan &&
+                                        !f.splicing_offset.errors.required
+                                      " class="text-red-600">
+                              Splicing Offset must be Greater than 0
+                            </div>
+                            <div *ngIf="f['splicing_offset'].errors['max']" class="text-red-600">
+                              Splicing Offset cannot exceed 1000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text">
+                            Repairing Offset (mm)</label>
+                          <input type="text" maxlength="4" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+                            #repairOffsetTouchKeyboard="ngxTouchKeyboard" (focus)="repairOffsetTouchKeyboard.openPanel()"
+                            (blur)="repairOffsetTouchKeyboard.closePanel()" formControlName="repairing_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder="" [ngClass]="{
+                                      'is-invalid':
+                                        submitted && f['repairing_offset'].errors
+                                    }" required />
+                          <div *ngIf="submitted && f['repairing_offset'].errors" class="invalid-feedback">
+                            <div *ngIf="f['repairing_offset'].errors['required']" class="text-red-600">
+                              Repairing Offset is required
+                            </div>
+                            <div *ngIf="f.repairing_offset.errors.pattern" class="text-red-600">
+                              Invalid Input
+                            </div>
+                            <div *ngIf="
+                                        f.repairing_offset.errors.lessThan &&
+                                        !f.repairing_offset.errors.required
+                                      " class="text-red-600">
+                              Repairing Offset must be Greater than 0
+                            </div>
+                            <div *ngIf="f['repairing_offset'].errors['max']" class="text-red-600">
+                              Repairing Offset cannot exceed 1000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text">
+                            Jogging Offset (mm)</label>
+                          <input type="text" maxlength="5" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+                            #jogOffsetTouchKeyboard="ngxTouchKeyboard" (focus)="jogOffsetTouchKeyboard.openPanel()"
+                            (blur)="jogOffsetTouchKeyboard.closePanel()" formControlName="jogging_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder="" [ngClass]="{
+                                      'is-invalid':
+                                        submitted && f['jogging_offset'].errors
+                                    }" required />
+                          <div *ngIf="submitted && f['jogging_offset'].errors" class="invalid-feedback">
+                            <div *ngIf="f['jogging_offset'].errors['required']" class="text-red-600">
+                              Jogging Offset is required
+                            </div>
+                            <div *ngIf="f.jogging_offset.errors.pattern" class="text-red-600">
+                              Invalid Input
+                            </div>
+                            <div *ngIf="f['jogging_offset'].errors['min']" class="text-red-600">
+                              Jogging Offset must be at least 1000 mm
+                            </div>
+                            <div *ngIf="f['jogging_offset'].errors['max']" class="text-red-600">
+                              Jogging Offset cannot exceed 10000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text">
+                            Correction Factor (mm)</label>
+                          <input type="text" maxlength="6" ngxTouchKeyboard ngxTouchKeyboardFullScreen
+                            #correFactTouchKeyboard="ngxTouchKeyboard" (focus)="correFactTouchKeyboard.openPanel()"
+                            (blur)="correFactTouchKeyboard.closePanel()" formControlName="correction_factor"
+                            (keypress)="onKeyPress($event, true)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder="" [ngClass]="{
+                                      'is-invalid': f['correction_factor'].errors
+                                    }" />
+                          <div *ngIf="f['correction_factor'].errors" class="invalid-feedback">
+                            <div *ngIf="f.correction_factor.errors.pattern" class="text-red-600">
+                              Invalid Input
+                            </div>
+                            <div *ngIf="f['correction_factor'].errors['min']" class="text-red-600">
+                              Correction Factor must be upto -10000 mm
+                            </div>
+                            <div *ngIf="f['correction_factor'].errors['max']" class="text-red-600">
+                              Correction Factor cannot exceed 10000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text">
+                            Repair Machine_id</label>
+                          <input readonly type="text" maxlength="10" formControlName="repair_machine_id"
+                            (keydown)="NoSpace($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder="" [ngClass]="{
+                                      'is-invalid':
+                                        submitted && f['repair_machine_id'].errors
+                                    }" required />
+                          <div *ngIf="submitted && f['repair_machine_id'].errors" class="invalid-feedback">
+                            <div *ngIf="f['repair_machine_id'].errors['required']" class="text-red-600">
+                              Machine_id is required
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="w-full flex items-center justify-center gap-5">
+                        <button type="submit" class="brand-button font-semibold py-2 px-4 rounded tracking-widest">
+                          Save
+                        </button>
+                        <button (click)="hideSetting()"
+                          class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- modal end -->
+    
+              <!-- setting modal end -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div
+      *ngIf="showSpliceImages"
+      class="fixed inset-0 z-[222] flex items-center justify-center bg-black bg-opacity-50"
+    >
+      <div
+        class="bg-white w-[80vw] max-w-5xl rounded-2xl shadow-lg overflow-auto"
+      >
+        <div class="flex items-center justify-between p-4 border-b">
+          <h4 class="text-xl font-semibold text-black">Splice Images</h4>
+
+          <button mat-icon-button (click)="closeSpliceImage()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="w-full rounded overflow-hidden shadow bg-white px-4 py-2">
+          <div class="flex flex-1 overflow-hidden gap-4">
+            <div
+              class="w-1/3 bg-gray-100 flex flex-col justify-between border-r relative"
+            >
+              <div *ngIf="chartOptionLineStatus" class="flex flex-col h-full">
+                <div class="flex flex-1 items-center">
+                  <div class="flex-1" style="height: calc(100dvh - 22.5rem)">
+                    <div
+                      echarts
+                      [options]="chartOptionLine"
+                      class="w-full h-full"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="flex-1 bg-gray-200 flex justify-center items-center relative rounded-lg"
+              style="height: calc(100dvh - 22.5rem)"
+            >
+              <img
+                src="https://plus.unsplash.com/premium_photo-1675802518675-d1c455e396be?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1113"
+                class="w-full h-full object-cover rounded-lg"
+                alt=""
+              />
+             
+            </div>
+          </div>
+         
+
+          <div class="relative px-14 py-2 rounded-lg mt-3">
+            <button
+              (click)="scrollLeft()"
+              class="w-12 h-12 absolute left-0 top-1/2 -translate-y-1/2 bg-brandColor shadow-lg rounded-full p-2 mx-2 z-10 flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl hover:bg-opacity-90 active:scale-95"
+            >
+              <mat-icon
+                class="text-white transition-transform duration-300 ease-in-out group-hover:-translate-x-1"
+              >
+                chevron_left
+              </mat-icon>
+            </button>
+
+            <div
+              class="overflow-x-auto no-scrollbar flex gap-3 px-14 scroll-snap-x"
+              #cardSlider
+              (mousedown)="startDragging($event)"
+              (mouseup)="stopDragging($event)"
+              (mouseleave)="stopDragging($event)"
+              (mousemove)="onDrag($event)"
+            >
+              <div
+                *ngFor="let defect of AllDefectsData"
+                class="min-w-[180px] rounded-lg shadow border border-gray-300 flex-shrink-0 hover:shadow-md transition-all cursor-pointer scroll-snap-item slider-card"
+                (dblclick)="focusOnElementByKey(defect.defect_id, defect.id)"
+              >
+                <div
+                  class="DefectBox relative"
+                  style="border: 2px solid royalblue"
+                >
+                  <img
+                    alt="defect image"
+                    (click)="checboxchecked(defect.defect_id)"
+                    (dblclick)="imagePopupOpen(defect)"
+                    class="h-36 w-full object-cover"
+                    [src]="imagebasepath + defect.cropped_image_path"
+                  />
+                  <label class="absolute right-0 top-0 mr-2 mt-2 z-10">
+                    <input
+                      type="checkbox"
+                      class="bg-blue-950 h-4 w-4 cursor-pointer"
+                      (change)="onCheckboxChange(defect.defect_id)"
+                      [checked]="isChecked(defect?.defect_id)"
+                      id="checkbox_{{ defect.defect_id }}"
+                    />
+                  </label>
+                </div>
+
+                <div
+                  class="flex items-center justify-between bg-brandColor px-2 py-1 text-xs"
+                >
+                  <span class="font-bold text-base-defect"
+                    >D{{ defect.defect_id }}</span
+                  >
+
+                  <span
+                    *ngIf="defect.merge_status === 1"
+                    class="font-bold text-base-defect"
+                  >
+                    {{
+                      totalmeter -
+                        (defect.defect_top_left_y_mm / metercal +
+                          defect.defect_height_mm / metercal) +
+                        config_data.correction_factor / metercal +
+                        config_data.splicing_offset / metercal
+                        | number : "1.2-2"
+                    }}
+                  </span>
+
+                  <span
+                    *ngIf="defect.merge_status !== 1"
+                    class="font-bold text-base-defect"
+                  >
+                    {{
+                      totalmeter -
+                        (defect.defect_top_left_y_mm / metercal +
+                          defect.defect_height_mm / metercal) +
+                        config_data.correction_factor / metercal +
+                        config_data.repairing_offset / metercal
+                        | number : "1.2-2"
+                    }}
+                  </span>
+
+                  <span class="font-bold text-base-defect">
+                    {{ defect.defect_type }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              (click)="scrollRight()"
+              class="w-12 h-12 absolute right-0 top-1/2 -translate-y-1/2 bg-brandColor shadow-lg rounded-full p-2 mx-2 z-10 flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl hover:bg-opacity-90 active:scale-95"
+            >
+              <mat-icon
+                class="text-white transition-transform duration-300 ease-in-out group-hover:-translate-x-1"
+                >chevron_right</mat-icon
+              >
+            </button>
+          </div>
+          <div class="w-full pt-2">
+
+            <div class="flex gap-3">
+              <div
+                *ngIf="ignoreCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4"
+                >
+                  <div
+                    class="flex flex-col items-center justify-between px-4 py-2"
+                  >
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      Please select at least one defect.
+                    </h4>
+                  </div>
+
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button
+                      (click)="closeIgnoreCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1"
+                    >
+                      OK
+                    </button>
+                  </div>
+                </div>
+              </div>
+             
+              <div class="flex justify-between items-center w-full">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col items-center">
+                    <button
+                      matTooltip="Go to Current"
+                      matTooltipPosition="above"
+                      class="w-14 h-14 flex items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100 transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-lg hover:rotate-[-5deg] active:scale-95"
+                      (click)="goToPrevious()"
+                    >
+                      <img
+                        class="w-8 transition-transform duration-300 ease-in-out group-hover:-translate-x-1"
+                        src="assets/icons/Dubble-arrow-right.svg"
+                        alt="Go"
+                      />
+                    </button>
+
+                    <span class="text-xs font-medium text-gray-800 mt-1"
+                      >Current</span
+                    >
+                  </div>
+
+                  <div class="flex flex-col items-center">
+                    <button
+                      matTooltip="Go to Current"
+                      matTooltipPosition="above"
+                      class="w-14 h-14 flex items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100 transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-lg hover:rotate-[-5deg] active:scale-95"
+                      (click)="goToPrevious()"
+                    >
+                      <img
+                        class="w-8 transition-transform duration-300 ease-in-out group-hover:-translate-x-1"
+                        src="assets/icons/Dubble-arrow-right.svg"
+                        alt="Go"
+                      />
+                    </button>
+
+                    <span class="text-xs font-medium text-gray-800 mt-1"
+                      >Forward</span
+                    >
+                  </div>
+                </div>
+
+                <div class="flex gap-4 items-center">
+                  <input
+                    type="number"
+                    placeholder="0"
+                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#073070]"
+                  />
+
+                  <button
+                    *ngIf="spliceDefectStatus"
+                    (click)="showBoxModal()"
+                    class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-4 rounded md:w-20"
+                  >
+                    <span class="">Splice</span>
+                   
+                  </button>
+                </div>
+              </div>
+
+              <div
+                *ngIf="selectCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4"
+                >
+                  <div
+                    class="flex flex-col items-center justify-between px-4 py-2"
+                  >
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      Please select at least one defect.
+                    </h4>
+                  </div>
+
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button
+                      (click)="closeCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1"
+                    >
+                      OK
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
+                *ngIf="repairCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4"
+                >
+                  <div
+                    class="flex flex-col items-center justify-between px-4 py-2"
+                  >
+                    <h4 class="text-lg text-rose-500 font-semibold">
+                      Please select at least one defect.
+                    </h4>
+                  </div>
+                  <div class="w-full flex flex-col items-center gap-5">
+                    <button
+                      (click)="closeRepairCheckbox()"
+                      class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1"
+                    >
+                      OK
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
+                *ngIf="showModal1"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2"
+                >
+                  <div
+                    class="flex items-center justify-between border-b px-4 py-2"
+                  >
+                    <h4 class="text-lg text-black font-semibold">
+                      Repair Defect
+                    </h4>
+                  </div>
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <h1 class="text-lg font-semibold text-black mb-2">
+                      Are you sure you want to repair the selected defect?
+                    </h1>
+                    <div
+                      *ngIf="suggetionForDeleteDefectStatus"
+                      class="flex items-center gap-2 mb-4 font-semibold"
+                    >
+                      <input
+                        type="checkbox"
+                        class="bg-blue-950 h-4 w-4 cursor-pointer"
+                        [(ngModel)]="suggestForDeletion"
+                      />
+                      Suggest for deletion
+                    </div>
+                    <div
+                      class="w-full flex items-center justify-center md:justify-start gap-5 mt-2"
+                    >
+                      <button
+                        (click)="splice_repair_defect(1)"
+                        class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest"
+                      >
+                        Repair
+                      </button>
+                      <button
+                        (click)="closeBoxModalRepair()"
+                        class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                *ngIf="showDefectPopup"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-left items-center bg-black bg-opacity-50"
+              >
+                <div class="bg-white rounded w-full h-3/5 shadow-lg p-4">
+                  <div class="flex justify-end">
+                    <button
+                      (click)="closeDefectImagePopup()"
+                      class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <div
+                    class="p-3 flex flex-col justify-center items-center gap-15px h-[98%]"
+                  >
+                    <div
+                      class="image-container flex justify-center items-center w-full h-full overflow-hidden"
+                      (wheel)="zoomImage($event)"
+                      (mousedown)="onMouseDown($event)"
+                      (mousemove)="onMouseMove($event)"
+                      (mouseup)="onMouseUp()"
+                      (mouseleave)="onMouseUp()"
+                    >
+                      <img
+                        [src]="imagebasepath + popupDefectData.full_image_path"
+                        [style.transform]="
+                          'translate(' +
+                          pointX +
+                          'px,' +
+                          pointY +
+                          'px) scale(' +
+                          zoomLevel +
+                          ')'
+                        "
+                        style="transform-origin: 0px 0px"
+                        class="border-2 border-gray-50 max-w-full max-h-full object-contain transition-transform duration-100 cursor-grab"
+                      />
+                    </div>
+
+                    <div
+                      class="flex items-center w-full bg-brandColor border-b"
+                    >
+                      <div class="bg-brandColor p-2">
+                        <p class="font-bold text-base">
+                          D{{ popupDefectData.defect_id }}
+                        </p>
+                      </div>
+                      <div
+                        class="brand-button flex items-center gap-2 bg-brandColor p-2 truncate h-full"
+                      >
+                        <p class="font-bold text-base">
+                          {{
+                            popupDefectData.defect_top_left_x_mm / this.metercal
+                              | number : "1.2-2"
+                          }}
+                        </p>
+                        <span
+                          class="text-yellow-200 flex h-6 justify-center text-base"
+                          >x</span
+                        >
+                        <p class="font-bold text-base">
+                          {{
+                            popupDefectData.defect_top_left_y_mm / this.metercal
+                              | number : "1.2-2"
+                          }}
+                        </p>
+                        <p class="font-bold text-base">
+                          ({{
+                            popupDefectData.defect_width_mm *
+                              popupDefectData.defect_height_mm
+                              | number : "1.0-0"
+                          }})
+                        </p>
+                      </div>
+                      <div
+                        class="flex items-center gap-2 bg-brandColor p-2 w-2/5 truncate"
+                      >
+                        <p class="font-bold text-base">
+                          {{ popupDefectData.defect_type }}
+                        </p>
+                        <p class="font-bold text-base">
+                          Group Id: {{ popupDefectData.group_id || "NA" }}
+                        </p>
+                        <p class="font-bold text-base">
+                          Cam Id: {{ popupDefectData.cam_id || "NA" }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                *ngIf="Setting"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2"
+                >
+                  <div
+                    class="flex items-center justify-center border-b px-4 py-2"
+                  >
+                    <h4 class="text-lg text-black font-semibold">Set Up</h4>
+                  </div>
+                  <form [formGroup]="Form" (ngSubmit)="onSubmit()">
+                    <div class="p-3 overflow-y-auto max-h-full">
+                      <div class="grid grid-cols-1 my-2 gap-3">
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            Repair Table width (mm)</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="4"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #repairwidthTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="repairwidthTouchKeyboard.openPanel()"
+                            (blur)="repairwidthTouchKeyboard.closePanel()"
+                            formControlName="inspection_table_width"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['inspection_table_width'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="
+                              submitted && f['inspection_table_width'].errors
+                            "
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="
+                                f['inspection_table_width'].errors['required']
+                              "
+                              class="text-red-600"
+                            >
+                              Repair Table Width is required
+                            </div>
+                            <div
+                              *ngIf="f.inspection_table_width.errors.pattern"
+                              class="text-red-600"
+                            >
+                              Invalid Input
+                            </div>
+                            <div
+                              *ngIf="
+                                f.inspection_table_width.errors.lessThan &&
+                                !f.inspection_table_width.errors.required
+                              "
+                              class="text-red-600"
+                            >
+                              Repair Table Width must be Greater than 0
+                            </div>
+                            <div
+                              *ngIf="f['inspection_table_width'].errors['max']"
+                              class="text-red-600"
+                            >
+                              Repair Table Width cannot exceed 1000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            Splicing Offset (mm)</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="4"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #sliceTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="sliceTouchKeyboard.openPanel()"
+                            (blur)="sliceTouchKeyboard.closePanel()"
+                            formControlName="splicing_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['splicing_offset'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['splicing_offset'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['splicing_offset'].errors['required']"
+                              class="text-red-600"
+                            >
+                              Splicing Offset is required
+                            </div>
+                            <div
+                              *ngIf="f.splicing_offset.errors.pattern"
+                              class="text-red-600"
+                            >
+                              Invalid Input
+                            </div>
+                            <div
+                              *ngIf="
+                                f.splicing_offset.errors.lessThan &&
+                                !f.splicing_offset.errors.required
+                              "
+                              class="text-red-600"
+                            >
+                              Splicing Offset must be Greater than 0
+                            </div>
+                            <div
+                              *ngIf="f['splicing_offset'].errors['max']"
+                              class="text-red-600"
+                            >
+                              Splicing Offset cannot exceed 1000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            Repairing Offset (mm)</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="4"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #repairOffsetTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="repairOffsetTouchKeyboard.openPanel()"
+                            (blur)="repairOffsetTouchKeyboard.closePanel()"
+                            formControlName="repairing_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['repairing_offset'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['repairing_offset'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['repairing_offset'].errors['required']"
+                              class="text-red-600"
+                            >
+                              Repairing Offset is required
+                            </div>
+                            <div
+                              *ngIf="f.repairing_offset.errors.pattern"
+                              class="text-red-600"
+                            >
+                              Invalid Input
+                            </div>
+                            <div
+                              *ngIf="
+                                f.repairing_offset.errors.lessThan &&
+                                !f.repairing_offset.errors.required
+                              "
+                              class="text-red-600"
+                            >
+                              Repairing Offset must be Greater than 0
+                            </div>
+                            <div
+                              *ngIf="f['repairing_offset'].errors['max']"
+                              class="text-red-600"
+                            >
+                              Repairing Offset cannot exceed 1000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            Jogging Offset (mm)</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="5"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #jogOffsetTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="jogOffsetTouchKeyboard.openPanel()"
+                            (blur)="jogOffsetTouchKeyboard.closePanel()"
+                            formControlName="jogging_offset"
+                            (keypress)="onKeyPress($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['jogging_offset'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['jogging_offset'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['jogging_offset'].errors['required']"
+                              class="text-red-600"
+                            >
+                              Jogging Offset is required
+                            </div>
+                            <div
+                              *ngIf="f.jogging_offset.errors.pattern"
+                              class="text-red-600"
+                            >
+                              Invalid Input
+                            </div>
+                            <div
+                              *ngIf="f['jogging_offset'].errors['min']"
+                              class="text-red-600"
+                            >
+                              Jogging Offset must be at least 1000 mm
+                            </div>
+                            <div
+                              *ngIf="f['jogging_offset'].errors['max']"
+                              class="text-red-600"
+                            >
+                              Jogging Offset cannot exceed 10000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            Correction Factor (mm)</label
+                          >
+                          <input
+                            type="text"
+                            maxlength="6"
+                            ngxTouchKeyboard
+                            ngxTouchKeyboardFullScreen
+                            #correFactTouchKeyboard="ngxTouchKeyboard"
+                            (focus)="correFactTouchKeyboard.openPanel()"
+                            (blur)="correFactTouchKeyboard.closePanel()"
+                            formControlName="correction_factor"
+                            (keypress)="onKeyPress($event, true)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid': f['correction_factor'].errors
+                            }"
+                          />
+                          <div
+                            *ngIf="f['correction_factor'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f.correction_factor.errors.pattern"
+                              class="text-red-600"
+                            >
+                              Invalid Input
+                            </div>
+                            <div
+                              *ngIf="f['correction_factor'].errors['min']"
+                              class="text-red-600"
+                            >
+                              Correction Factor must be upto -10000 mm
+                            </div>
+                            <div
+                              *ngIf="f['correction_factor'].errors['max']"
+                              class="text-red-600"
+                            >
+                              Correction Factor cannot exceed 10000 mm
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <label
+                            class="block mb-2 font-bold leading-6 text-base font-semibold upercase-text"
+                          >
+                            Repair Machine_id</label
+                          >
+                          <input
+                            readonly
+                            type="text"
+                            maxlength="10"
+                            formControlName="repair_machine_id"
+                            (keydown)="NoSpace($event)"
+                            class="shadow-sm bg-white border border-gray-300 text-gray-900 text-lg rounded-lg block w-full py-3 px-3 dark:bg-gray-700 dark:shadow-sm-light"
+                            placeholder=""
+                            [ngClass]="{
+                              'is-invalid':
+                                submitted && f['repair_machine_id'].errors
+                            }"
+                            required
+                          />
+                          <div
+                            *ngIf="submitted && f['repair_machine_id'].errors"
+                            class="invalid-feedback"
+                          >
+                            <div
+                              *ngIf="f['repair_machine_id'].errors['required']"
+                              class="text-red-600"
+                            >
+                              Machine_id is required
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="w-full flex items-center justify-center gap-5"
+                      >
+                        <button
+                          type="submit"
+                          class="brand-button font-semibold py-2 px-4 rounded tracking-widest"
+                        >
+                          Save
+                        </button>
+                        <button
+                          (click)="hideSetting()"
+                          class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div
+      *ngIf="showconfigcheck"
+      class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+    >
+      <div class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg p-4">
+        <!-- modal header -->
+        <div class="flex flex-col items-center justify-between px-4 py-2">
+          <h4 class="text-lg text-black font-semibold">
+            {{ 'config_required_repair' | transloco }}
+          </h4>
+        </div>
+        <!-- modal body -->
+        <div class="w-full flex flex-col items-center gap-5">
+          <button
+            (click)="closeBoxconfigcheck()"
+            class="bg-green-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-green-500 hover:border-transparent rounded tracking-widest mt-1"
+          >
+            {{ 'ok' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="roslibconnection_alert"
+      class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+    >
+      <div class="bg-white rounded w-full md:w-fit overflow-auto shadow-lg p-4">
+        <!-- modal header -->
+        <div class="flex flex-col items-center justify-between px-4 py-2">
+          <h4 class="text-black font-semibold">
+            {{ 'connect_ros_server' | transloco }}
+          </h4>
+        </div>
+        <!-- modal body -->
+        <div class="w-full flex items-center justify-center gap-2">
+          <button
+            (click)="closeRoslibBox()"
+            class="brand-button font-semibold text-white py-2 px-4 border rounded tracking-widest mt-1"
+          >
+            {{ 'reconnect' | transloco }}
+          </button>
+          <button
+            (click)="closeRoslibBox1()"
+            class="bg-gray-200 text-gray-900 font-semibold text-white py-2 px-4 border rounded tracking-widest mt-1"
+          >
+            {{ 'cancel' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="showStopMachineConfirm"
+      class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+    >
+      <div class="bg-white rounded w-full md:w-1/4 overflow-auto shadow-lg p-4">
+        <!-- modal header -->
+        <div class="flex flex-col items-center justify-between p-2">
+          <h4 class="text-lg text-black font-semibold">
+            {{ 'stop_machine_confirmation' | transloco }}
+          </h4>
+        </div>
+        <!-- modal body -->
+        <div class="w-full flex flex-row items-center gap-2 justify-center">
+          <button
+            (click)="StopMachineConfirm()"
+            class="bg-brandColor font-semibold text-white py-2 px-4 hover:border-transparent rounded tracking-widest mt-1"
+          >
+            {{ 'yes' | transloco }}
+          </button>
+          <button
+            (click)="closeStopMachineConfirm()"
+            class="bg-gray-200 font-semibold py-2 px-4 border rounded tracking-widest mt-1"
+          >
+            {{ 'no' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup for PLC Meter Jump Warning -->
+    <div *ngIf="meterJumpingPopup"
+      class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+      <div class="bg-white rounded w-full md:w-fit overflow-auto shadow-lg p-4">
+    
+        <!-- modal header -->
+        <div class="flex flex-col items-center justify-between px-4 py-2">
+          <h4 class="text-black font-semibold text-center">
+            {{ 'plc_meter_jump_detected' | transloco }}({{ meterDifference }} {{ 'meter' | transloco }})
+          </h4>
+        </div>
+    
+        <!-- modal body -->
+        <div class="w-full flex items-center justify-center gap-2">
+          <button (click)="closemeterJumpingPopup()"
+            class="brand-button font-semibold text-white py-2 px-4 border rounded tracking-widest mt-1">
+            {{ 'ok' | transloco }}
+          </button>
+        </div>
+    
+      </div>
+    </div>
+
+    <!-- Backend Disconnection popup -->
+    <div *ngIf="backendDisconnectionPopup"
+      class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+      <div class="bg-white rounded w-full md:w-fit overflow-auto shadow-lg p-4">
+    
+        <!-- modal header -->
+        <div class="flex flex-col items-center justify-between px-4 py-2">
+          <h4 class="text-black font-semibold text-center">
+            {{ 'backend_disconnection_popup' | transloco }}
+          </h4>
+        </div>
+    
+        <!-- modal body -->
+        <div class="w-full flex items-center justify-center gap-2">
+          <button (click)="closeBackendDisconnectionPopup()"
+            class="brand-button font-semibold text-white py-2 px-4 border rounded tracking-widest mt-1">
+            {{ 'ok' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+     <!-- All Defects reparied on Roll popup -->
+    <div *ngIf="allDefectsDoneAlertPopup"
+      class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+      <div class="bg-white rounded w-full md:w-fit overflow-auto shadow-lg p-4">
+    
+        <!-- modal header -->
+        <div class="flex flex-col items-center justify-between px-4 py-2">
+          <h4 class="text-black font-semibold text-center">
+            {{ 'all_defects_repaired' | transloco }}
+          </h4>
+        </div>
+    
+        <!-- modal body -->
+        <div class="w-full flex items-center justify-center gap-2">
+          <button (click)="closeAllDefectsDoneAlertPopup()"
+            class="brand-button font-semibold text-white py-2 px-4 border rounded tracking-widest mt-1">
+            {{ 'ok' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div *ngIf="getLoaderState() | async" class="loader-overlay">
+  <div class="loader-text">
+    <img src="assets/images/logo/logo.png" alt="Logo" class="loader-logo" />
+    <p class="mt-2">{{ 'defects_loading' | transloco }}</p>
+  </div>
+</div>

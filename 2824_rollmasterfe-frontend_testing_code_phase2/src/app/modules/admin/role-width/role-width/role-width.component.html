@@ -1,0 +1,549 @@
+<div class="margeEdit-container">
+  <div class="relative overflow-x-auto  px-4 sm:px-4 py-2 w-full Body-height">
+    <!-- tabs Design start -->
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="flex gap-5 items-center w-full md:w-1/2">
+        <img src="assets/images/cards/arrow.png" class="w-5 cursor-pointer" alt="" routerLink="/roll-details">
+        <div class="flex w-full md:max-w-lg rounded-lg overflow-hidden gap-2">
+          <a routerLink="/review"
+            class="w-full flex justify-center font-medium rounded-lg px-5 py-2 border bg-white text-gray-800 border-gray-200 hover:bg-gray-100 shadow">
+            {{ 'merge_and_edit' | transloco }}
+          </a>
+
+          <a routerLink="/role-width"
+            class="w-full flex justify-center font-medium px-5 py-2 border-t border-b bg-brandColor text-white border-transparent hover:bg-gray-800 rounded-lg shadow">
+            {{ 'roll_width' | transloco }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Roll ID, Toggle and Filter -->
+      <div class="flex items-center gap-3 mb-1">
+
+        <!-- Roll Id + value -->
+        <div class="flex items-center gap-3 bg-white rounded-md px-3 py-2 border border-gray-100 shadow-sm">
+          <div class="flex gap-2 items-baseline">
+            <span class="font-bold text-base text-blue">{{ 'roll_id' | transloco }}</span>
+            <span class="font-normal text-base text-gray-800 truncate max-w-[160px]">
+              {{ role_data.customer_roll_id }} 
+            </span>
+          </div>
+
+          <!-- Vertical divider -->
+          <div class="h-6 w-px bg-gray-200 mx-2"></div>
+
+          
+
+          <!-- Filter button -->
+          <button type="submit" (click)="toggleFilter()"
+            class="w-8 h-8 bg-brandColor flex justify-center items-center rounded-full">
+            <img src="./assets/icons/filter.svg" alt="" class="w-1/2" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- tabs Design end -->
+    <div *ngIf="showFilter" [ngClass]="{'grid grid-cols-1 gap-3': true, 'md:grid-cols-1': applyFilterStatus}">
+      <div *ngIf="applyFilterStatus" class="w-full">
+        <div class="">
+          <div class="">
+            <div class="w-full">
+              <form [formGroup]="Form" (ngSubmit)="onSubmit()">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                  <!-- 2. Filters Card -->
+                  <div class="md:col-span-5 rounded shadow bg-white py-4 px-4">
+                    <h5 class="text-xl text-gray-900 font-bold border-b pb-2 text-center">
+                      {{ 'filters' | transloco }}
+                    </h5>
+                    <div class="mt-3 grid grid-cols-1 md:grid-cols-12 gap-3">
+                      <div class="md:col-span-7 grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <!-- Roll Width -->
+                        <div>
+                          <label class="block text-blue text-base font-bold mb-1">{{ 'roll_width_mm' | transloco }}</label>
+                          <input maxlength="10" formControlName="roll_width" (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none" type="text"
+                            placeholder="{{ 'value' | transloco }}" (focus)="onFocus('roll_width')" (blur)="onBlur('roll_width')" />
+                        </div>
+                      
+                        <!-- Min -->
+                        <div>
+                          <label class="block text-blue text-base font-bold mb-1">{{ 'min_mm' | transloco }}</label>
+                          <input maxlength="10" formControlName="min_tolerance" (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none" type="text"
+                            placeholder="{{ 'value' | transloco }}" />
+                          <div *ngIf="submitted && Form.get('min_tolerance').hasError('required')" class="text-sm text-red-600">
+                            {{ 'min_tolerance_required' | transloco }}
+                          </div>
+                        </div>
+                        <!-- Max -->
+                        <div>
+                          <label class="block text-blue text-base font-bold mb-1">{{ 'max_mm' | transloco }}</label>
+                          <input maxlength="10" formControlName="max_tolerance" (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none" type="text"
+                            placeholder="{{ 'value' | transloco }}" />
+                          <div *ngIf="submitted && Form.get('max_tolerance').hasError('required')" class="text-sm text-red-600">
+                            {{ 'max_tolerance_required' | transloco }}
+                          </div>
+                        </div>
+                        <!-- Variation Points Dropdown -->
+                        <div>
+                          <label class="block text-blue text-base font-bold mb-1">{{ 'width_condition' | transloco }}</label>
+                          <select class="w-full py-3 px-3 border rounded text-gray-700 focus:outline-none" [(ngModel)]="variationSelection"
+                            [ngModelOptions]="{ standalone: true }" (change)="onVariationChange($event)">
+                            <option value="all">{{ 'all_points' | transloco }}</option>
+                            <option value="in-range">{{ 'in_range' | transloco }}</option>
+                            <option value="variation">{{ 'wide_narrow' | transloco }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <!-- DIVIDER -->
+                      <div class="hidden md:flex md:col-span-1 justify-center">
+                        <div class="w-px bg-gray-300"></div>
+                      </div>
+
+                      <div class="md:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Thread Min -->
+                        <div>
+                          <label class="block text-blue text-base font-bold mb-1">{{ 'thread_max_mm' | transloco }}</label>
+                          <input maxlength="10" formControlName="thread_max_tolerance" (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                            type="text" placeholder="{{ 'value' | transloco }}" />
+                          <div *ngIf="submitted && Form.get('thread_max_tolerance').hasError('required')" class="text-sm text-red-600">
+                            {{ 'thread_max_tolerance_required' | transloco }}
+                          </div>
+                        </div>
+                        
+                        <!-- Thread Max -->
+                        <div>
+                          <label class="block text-blue text-base font-bold mb-1">{{ 'thread_min_mm' | transloco }}</label>
+                          <input maxlength="10" formControlName="thread_min_tolerance" (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                            type="text" placeholder="{{ 'value' | transloco }}" />
+                          <div *ngIf="submitted && Form.get('thread_min_tolerance').hasError('required')" class="text-sm text-red-600">
+                            {{ 'thread_min_tolerance_required' | transloco }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 3. Action Buttons Card -->
+                  <div class="md:col-span-1 rounded shadow bg-white py-4 px-4 flex flex-col items-center justify-center gap-3">
+                    <h5 class="text-xl text-gray-900 font-bold border-b pb-2 text-center">
+                      {{ 'actions' | transloco }}
+                    </h5>
+                    <button type="submit" class="w-full brand-button p-3 text-white rounded-lg">
+                      {{ 'go' | transloco }}
+                    </button>
+                    <button type="button" (click)="resetForm(); applyFilter();"
+                      class="w-full bg-rose-600 p-3 text-white rounded-lg">
+                      {{ 'reset' | transloco }}
+                    </button>
+                  </div>
+                </div>
+              </form>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+      <div class="col-span-2 bg-brandColor flex items-center justify-between px-4 py-2 rounded-md relative">
+
+        <!-- Centered Label -->
+        <div class="absolute left-1/2 transform -translate-x-1/2">
+          <label *ngIf="viewGraphStatus" class="inline-flex items-center">
+            <span class="font-bold text-lg text-white">
+              {{ (graphTableVisible ? "width_graph_view" : "width_image_view") | transloco }}
+            </span>
+          </label>
+        </div>
+
+        <!-- Right-Aligned Toggle -->
+        <div class="ml-auto flex items-center">
+          <label class="flex items-center gap-2">
+            <div class="font-bold text-base text-white whitespace-nowrap">
+              {{ (graphTableVisible ? 'image_mode' : 'graph_mode') | transloco }}
+            </div>
+
+            <!-- Toggle Switch -->
+            <input
+              type="checkbox"
+              (change)="toggleGraphTableVisibility()"
+              class="sr-only peer"
+              [checked]="graphTableVisible" />
+            <div
+              class="relative w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-blue-600 
+                    after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+                    after:bg-white after:rounded-full after:h-4 after:w-4 
+                    after:transition-all peer-checked:after:translate-x-5">
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+    
+      <div *ngIf="!graphTableVisible && viewImageStatus" class="col-span-4 w-full rounded overflow-hidden shadow bg-white">
+        <div class="relative overflow-auto shadow-md sm:rounded-lg flex flex-col bg-white pb-4" [ngStyle]="{
+              height: isExpanded
+                ? 'calc(100vh - 22.9rem)'
+                : 'calc(100vh - 14.9rem)'
+            }">
+
+          <div  class="relative flex justify-center items-center mb-2 p-2">
+            <div *ngIf="buttonDisableStatus"  class="absolute left-4">
+              <label class="flex items-center gap-2 ml-4">
+                <input type="checkbox"
+                  [checked]="selectedRollWidthIds.length === selectableRollWidthData.length && selectableRollWidthData.length > 0"
+                  (change)="toggleSelectAll($event.target.checked)" />
+                <span class="text-lg font-medium">{{ 'select_all' | transloco }}</span>
+              </label>
+            </div>
+           
+            <!-- Pagination Controls -->
+            <div class="flex justify-center items-center gap-1 md:gap-2 mt-4">
+              <!-- First -->
+              <button (click)="goToFirstPage()" [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm font-semibold rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                «
+              </button>
+            
+              <!-- Previous -->
+              <button (click)="prevPage()" [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm font-semibold rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                ‹
+              </button>
+            
+              <!-- Page Numbers -->
+              <ng-container *ngFor="let page of visiblePages">
+                <button *ngIf="page !== '...'; else dots" (click)="goToPage(page)" [ngClass]="{
+                    'bg-blue-600 text-white border-blue-600': currentPage === page,
+                    'bg-white text-gray-700 hover:bg-gray-100 border-gray-300': currentPage !== page
+                  }" class="px-3 py-2 text-sm font-medium rounded-md border transition">
+                  {{ page }}
+                </button>
+                <ng-template #dots>
+                  <span class="px-3 py-2 text-gray-500 select-none">...</span>
+                </ng-template>
+              </ng-container>
+            
+              <!-- Next -->
+              <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                class="px-3 py-2 text-sm font-semibold rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                ›
+              </button>
+            
+              <!-- Last -->
+              <button (click)="goToLastPage()" [disabled]="currentPage === totalPages"
+                class="px-3 py-2 text-sm font-semibold rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                »
+              </button>
+            </div>
+            
+            
+            <div *ngIf="buttonDisableStatus" class="absolute right-4">
+              <button type="button" (click)="addSelectedAsDefect()"
+                class="mr-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-lg">
+                {{ 'add_as_defect' | transloco }}
+              </button>
+            </div>
+            
+          </div>
+          
+          
+          <div *ngIf="onShowTable && paginatedData.length > 0" class="grid grid-cols-2 gap-4 p-4">
+            <div *ngFor="let data of paginatedData; let i = index"
+              class="rounded-lg overflow-hidden border-2 border-black bg-white shadow flex flex-col items-center">
+          
+              <div class="w-full flex justify-center items-center bg-gray-50 relative"
+                (click)="addAsDefectStatus && (data?.filter_status === 0) ? toggleCheckbox(data.roll_width_id) : null">
+          
+                <!-- Image -->
+                <img *ngIf="data.width_image_path && combinedImagesMap[i]" [src]="combinedImagesMap[i]" alt="combined image"
+                  style="max-height: 224px; width: auto; object-fit: contain;"
+                  class="h-100 object-contain object-fill rounded cursor-pointer"
+                  (dblclick)="openImagePopup(data, i, 'openpopup')" />
+          
+                <!-- Single image fallback -->
+                <img *ngIf="!data.width_image_path" [src]="imagebasepath + data.width_image_path" alt="image"
+                  style="max-height: 224px; width: auto; object-fit: contain;"
+                  class="h-100 object-contain object-fill rounded cursor-pointer"
+                  (dblclick)="openImagePopup(data, i, 'openpopup')" />
+          
+                <!-- Checkbox -->
+                <label *ngIf="addAsDefectStatus && (data?.filter_status === 0)" class="absolute right-2 top-2 z-10">
+                  <input type="checkbox" class="bg-blue-950 h-4 w-4 cursor-pointer"
+                    (change)="onCheckboxChange(data.roll_width_id, $event.target.checked)"
+                    [checked]="isChecked(data.roll_width_id)" id="checkbox_{{ i }}" [disabled]="showLoader" />
+                </label>
+              </div>
+              <div class="flex items-center w-full bg-brandColor ">
+                <div class="bg-brandColor p-2 ml-3 mr-2">
+                  <p class="font-bold text-sm">
+                    W{{data.roll_width_id}}
+                  </p>
+                </div>
+                <div class="brand-button flex items-center gap-2 bg-brandColor p-2 truncate h-full ml-5 mr-5">
+                  <p class="font-bold text-sm ml-3 mr-3">
+                    {{ 'meter' | transloco }}: {{data.running_meter | number:'1.1-1'}}
+                  </p>
+                  <p class="font-bold text-sm ml-3 mr-3">
+                    {{ 'width_label' | transloco }} {{data.calculated_width}}
+                  </p>
+                  <!-- Colored Indicator -->
+                  <span class="inline-block pb-2 w-4 h-4 rounded-full border border-white shadow" [ngClass]="{
+                                                                  'bg-red-500': data?.filter_status === 0,
+                                                                  'bg-green-500': data?.filter_status !== 0
+                                                                }" aria-label="filter status indicator"
+                    [title]="(data?.filter_status === 0 ? 'out_of_tolerance' : 'within_tolerance') | transloco"></span>
+                                                                
+                  <!-- STATUS TAG -->
+                  <ng-container *ngIf="data?.filter_status === 0; else greenTag">
+                    <span *ngIf="data.calculated_width < min_tol"
+                      class="text-xs font-semibold text-red-600 bg-red-100 px-2 py-1 rounded">{{ 'narrow_width' | transloco }}</span>
+                    <span *ngIf="data.calculated_width > max_tol"
+                      class="text-xs font-semibold text-red-600 bg-red-100 px-2 py-1 rounded">{{ 'wide_width' | transloco }}</span>
+                    <span *ngIf="data.calculated_width >= min_tol && data.calculated_width <= max_tol"
+                      class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded">{{ 'in_range' | transloco }}</span>
+                  </ng-container>
+                  
+                  <ng-template #greenTag>
+                    <ng-container *ngIf="min_tol !== 0 && max_tol !== 0 && min_tol != null && max_tol != null">
+                      <span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded">
+                        {{ 'in_range' | transloco }}
+                      </span>
+                    </ng-container>
+                  </ng-template>
+                </div> 
+                
+                <!-- THREAD STRIP -->
+                <div *ngFor="let thread of data.threads"
+                  class="flex items-center gap-2 px-2 py-1 rounded text-xs font-semibold border mr-2 ml-2" [ngClass]="{
+                                    'bg-green-100 text-green-700 border-green-300': thread.tolerance_status === 1,
+                                    'bg-red-100 text-red-700 border-red-300': thread.tolerance_status === 0,
+                                    'bg-gray-100 text-gray-700 border-gray-300': thread.tolerance_status === null
+                                  }">
+                  <!-- Dot -->
+                  <span class="w-2 h-2 rounded-full" [ngClass]="{
+                                        'bg-green-500': thread.tolerance_status === 1,
+                                        'bg-red-500': thread.tolerance_status === 0
+                                      }">
+                  </span>
+                  <!-- Label -->
+                  <span>
+                    T{{thread.thread_id}}: {{thread.location}}
+                  </span>
+                </div>
+                
+                <!-- <div class="ml-auto flex items-center pr-2 gap-2">
+                  <span class="inline-block pb-2 w-4 h-4 rounded-full border border-white shadow" [ngClass]="{
+                                                                  'bg-red-500': data?.filter_status === 0,
+                                                                  'bg-green-500': data?.filter_status !== 0
+                                                                }" aria-label="filter status indicator"
+                    [title]="(data?.filter_status === 0 ? 'out_of_tolerance' : 'within_tolerance') | transloco"></span>
+                </div> -->
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="onShowTable && allRollWidthData.length === 0" class="flex justify-center items-center h-32">
+            <span class="font-bold pt-2 leading-6 text-black text-center font-semibold uppercase-text w-full">{{ 'no_records_found' | transloco }}</span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="graphTableVisible && viewGraphStatus" class="col-span-3 w-full rounded overflow-hidden shadow bg-white">
+        <div class="relative overflow-auto shadow-md sm:rounded-lg flex flex-col bg-white pb-4" [ngStyle]="{
+                        height: isExpanded
+                          ? 'calc(100vh - 22.9rem)'
+                          : 'calc(100vh - 14.9rem)'
+                      }">
+          <div *ngIf="chartOptionLineStatus">
+            <div class="flex">
+              <div class="w-2/12 md:w-1/12 flex items-center justify-center">
+                <!-- <p class="text-base  pb-1 -rotate-90 h-fit">Measured Width (mm)</p> -->
+                <p class="texto rotate-180 text-base font-semibold">
+                  {{ 'measured_width_mm' | transloco }}
+                </p>
+                <img class="w-[18%]" src="assets/images/Arrow.svg" alt="" />
+              </div>
+              <div class="p-0 md:p-3 w-5/6 md:w-11/12" [ngStyle]="{
+                              height: isExpanded
+                                ? 'calc(100vh - 30.5rem )'
+                                : 'calc(100vh - 22.5rem)'
+                            }">
+                <div echarts [options]="chartOptionLine" class="demo-chart w-full h-full" (chartInit)="onChartInit($event)">
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-4">
+              <span class="flex justify-center"><img class="w-[10%]" src="assets/images/Arrow-horizontal.svg"
+                  alt="" /></span>
+              <span class="text-base font-semibold">{{ 'running_meter' | transloco }}</span>
+            </div>
+          </div>
+    
+          <div *ngIf="!chartOptionLineStatus"
+            class="sm:col-span-2 md:col-span-4 lg:col-span-2 flex justify-center items-center p-6  ">
+            <span class="font-bold pt-2 leading-6 text-black text-center font-semibold upercase-text w-full">{{ 'no_records_found' | transloco }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="(getLoaderState() | async) && showLoader" class="loader-overlay">
+  <div class="loader-text">
+    <img src="assets/images/logo/logo.png" alt="Logo" class="loader-logo" />
+    <p class="mt-2 text-center">{{ 'width_images_loading' | transloco }}</p>
+  </div>
+</div>
+<!-- modal add as defect -->
+
+<div
+  *ngIf="addAsDefect"
+  class="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 p-4"
+>
+  <div
+    class="bg-white rounded-2xl shadow-2xl w-full max-w-sm md:max-w-md p-6 text-center animate-fade-in"
+  >
+    <!-- Header -->
+    <h4 class="text-xl font-semibold text-gray-800 mb-4">
+      {{ 'mark_as_width_defect_confirmation' | transloco }}
+    </h4>
+
+    <!-- Divider -->
+    <div class="w-16 h-[2px] bg-blue-600 mx-auto mb-6"></div>
+
+    <!-- Buttons -->
+    <div class="flex items-center justify-center gap-4">
+      <button
+        (click)="addDefect()"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all shadow-sm hover:shadow-md"
+      >
+        {{ 'yes' | transloco }}
+      </button>
+      <button
+        (click)="closeaddAsDefectbox()"
+        class="border border-gray-300 text-gray-700 bg-gray-50 hover:bg-gray-100 font-semibold py-2 px-6 rounded-lg transition-all shadow-sm hover:shadow-md"
+      >
+        {{ 'no' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Graph point click popup -->
+<!-- <div *ngIf="isGraphPoint"
+  class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-[800px] h-[600px]">
+    
+    <div class="w-full flex justify-center items-center">
+      <img [src]="'assets/images/' + imageName" alt="Image" class="w-full h-auto rounded-lg shadow-md w-[500px] h-[500px]">
+    </div>
+    <div class="w-full flex items-center justify-center gap-5 mt-4">
+      <button (click)="closeGraphPointPopup()"
+        class="text-gray-900 bg-white border border-gray-300 font-semibold py-2 px-4 rounded tracking-widest">
+        Close</button>
+    </div>
+  </div>
+</div> -->
+
+<!-- <div *ngIf="showImagePopup"
+  class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <img [src]="imagebasepath + imageName" alt="Image" class="w-full h-auto rounded-lg shadow-md">
+    <div class="w-full flex items-center justify-center gap-5 mt-4">
+      <button (click)="closeImagePopup()"
+        class="text-gray-900 bg-white border border-gray-300 font-semibold py-2 px-4 rounded tracking-widest">
+        Close</button>
+    </div>
+  </div>
+</div> -->
+
+<!-- Canvas for stitching images (hidden) -->
+<canvas #stitchCanvas style="display:none;"></canvas>
+
+<!-- Graph point modal -->
+<div *ngIf="isGraphPoint" class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-[80%] h-[70%]">
+    <!-- Modal body -->
+    <div class="image-container flex justify-center items-center w-full h-[94%] overflow-hidden"
+      
+      (mousedown)="onMouseDown($event)" 
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp()" 
+      (mouseleave)="onMouseUp()">
+      <img *ngIf="combinedImageSrc"
+        [src]="combinedImageSrc"
+        (wheel)="zoomImage($event)"
+        [style.transform]="'translate(' + pointX + 'px, ' + pointY + 'px) scale(' + zoomLevel + ')'"
+        style="transform-origin: 0px 0px;"
+        class="border-2 border-gray-50 max-w-full max-h-full object-contain transition-transform duration-100 cursor-grab"
+        draggable="false" />
+      <ng-container *ngIf="!combinedImageSrc">
+        <span class="text-gray-500">{{ 'loading_image' | transloco }}</span>
+      </ng-container>
+    </div>
+    <div class="w-full flex items-center justify-center gap-5 mt-4">
+      <button (click)="closeGraphPointPopup()"
+        class="text-gray-900 bg-white border border-gray-300 font-semibold py-2 px-4 rounded tracking-widest">
+        {{ 'close' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- <div
+  *ngIf="showImagePopup"
+  class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+>
+  <div
+    class="bg-white rounded w-full md:w-2/3 lg:w-3/4 xl:w-4/5 h-4/5 shadow-lg p-4"
+  >
+    <div class="flex justify-end">
+      <button
+        (click)="closeImagePopup()"
+        class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+      >
+        Close
+      </button>
+    </div>
+
+    <div class="p-3 flex flex-col justify-center items-center gap-15px h-[98%]">
+      <div class="image-container flex justify-center items-center w-full h-full overflow-hidden"
+        (wheel)="zoomImage($event)" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+        (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
+        <img [src]="imagebasepath + imageName"
+          [style.transform]="'translate(' + pointX + 'px,' + pointY + 'px) scale(' + zoomLevel + ')'"
+          style="transform-origin: 0px 0px;"
+          class="border-2 border-gray-50 max-w-full max-h-full object-contain transition-transform duration-100 cursor-grab" />
+      </div>
+      <div class="flex items-center w-full bg-brandColor border-b">
+        <div class="bg-brandColor p-2">
+          <div class="flex items-center w-full bg-brandColor  px-4 py-3 justify-between mt-auto">
+            <span class="font-bold text-lg text-white mr-4">ID : {{selectedImageData?.robro_roll_id}}</span>
+            <span class="font-bold text-lg text-white mr-4">Meter : {{selectedImageData?.running_meter}}</span>
+            <span class="font-bold text-lg text-white mr-4">Width : {{selectedImageData?.calculated_width}}</span>
+            <span class="ml-2 flex items-center font-bold text-lg text-white mr-4" *ngIf="addAsDefectStatus"> Group :  
+              <span class="inline-block w-4 h-4 rounded-full ml-1" [ngClass]="{
+                    'bg-red-500': selectedImageData?.hasOwnProperty('filter_status'),
+                    'bg-green-500': !selectedImageData?.hasOwnProperty('filter_status')
+                  }">
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->

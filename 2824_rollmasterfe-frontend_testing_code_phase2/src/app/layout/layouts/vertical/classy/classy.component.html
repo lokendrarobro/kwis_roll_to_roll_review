@@ -1,0 +1,109 @@
+<!-- Loading bar -->
+<fuse-loading-bar></fuse-loading-bar>
+
+<!-- Navigation -->
+<fuse-vertical-navigation
+  class="dark bg-gray-900 print:hidden"
+  [mode]="isScreenSmall ? 'over' : 'side'"
+  [name]="'mainNavigation'"
+  [navigation]="navigation"
+  [opened]="!isScreenSmall"
+>
+  <!-- Navigation header hook -->
+  <ng-container fuseVerticalNavigationContentHeader>
+    <div class="flex items-center w-full p-4 pl-6">
+      <!-- Logo Section -->
+     <div class="flex items-center justify-start gap-4 w-full">
+  <img class="w-24 bg-white p-1 rounded-sm" src="assets/images/logo/logo.png" alt="Logo 1" />
+
+  <!-- Vertical Line Separator -->
+  <div *ngIf="customer_logo_status" style="width: 1px; height: 50px; background-color: #ccc"></div>
+
+  <img
+    *ngIf="customer_logo_status"
+    class="w-26 bg-white p-1 rounded-sm"
+    [src]="imagebasepath + 'customer_logo/customer_logo.png'"
+    alt="Logo 2"
+  />
+</div>
+
+
+      <!-- Components -->
+      <!-- <div class="flex items-center ml-auto">
+        <user [showAvatar]="false"></user>
+      </div> -->
+    </div>
+    <!-- User -->
+    <div class="flex flex-col items-center w-full p-4">
+      <div class="relative w-24 h-24">
+        <img
+          class="w-full h-full rounded-full"
+          *ngIf="profile_picture_path"
+          src="{{ profile_picture_path }}"
+          alt="User avatar"
+        />
+
+        <img
+          class="w-full h-full rounded-full"
+          *ngIf="!profile_picture_path"
+          src="assets/images/avatars/Profile.png"
+          alt="User avatar"
+        />
+      </div>
+      <div class="flex flex-col items-center justify-center w-full mt-6">
+        <div
+          class="w-full text-ellipsis overflow-hidden text-center leading-normal font-medium word-wrap"
+        >
+          {{ user?.first_name }} {{ user?.last_name }}
+        </div>
+        <div
+          class="w-full mt-0.5 text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary word-wrap"
+        >
+          {{ user?.email }}
+        </div>
+        <!-- <div
+          class="w-full mt-0.5 text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary word-wrap"
+        >
+          <p>Machine Id: {{ machineId }}</p>
+        </div> -->
+      </div>
+      <div class="absolute bottom-2 z-[999] text-white text-lg">
+        <!-- <p>Version: {{ version }}</p> -->
+        <p>{{ 'version' | transloco }}: {{ version }}</p>
+        <p>{{ build_version }}</p>
+      </div>
+    </div>
+  </ng-container>
+</fuse-vertical-navigation>
+
+<!-- Wrapper -->
+<div id="mydiv" class="flex flex-col flex-auto w-full min-w-0">
+  <!-- Header -->
+  <div
+    class="relative flex justify-between items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden"
+  >
+    <!-- Navigation toggle button -->
+    <button mat-icon-button (click)="toggleNavigation('mainNavigation')">
+      <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
+    </button>
+
+    <!-- Shutdown button -->
+    <button mat-icon-button (click)="shutdownRepair()">
+      <mat-icon
+        [svgIcon]="'power_settings_new'"
+        style="font-size: 34px; font-weight: bold"
+      ></mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-col flex-auto">
+    <router-outlet *ngIf="true"></router-outlet>
+  </div>
+  <div class="flex justify-between p-2 text-center bg-slate-200 px-4 w-full">
+    <span> copyright © 2026 Robro Systems Pvt Ltd. All rights reserved </span>
+    <span> +919893452000 | +91 9981641111 | hello@robrosystems.com </span>
+  </div>
+</div>
+
+<!-- Quick chat -->

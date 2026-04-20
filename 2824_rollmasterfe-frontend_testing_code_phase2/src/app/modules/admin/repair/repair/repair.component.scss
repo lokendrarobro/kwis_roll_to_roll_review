@@ -1,0 +1,207 @@
+@media screen and (min-width: 760px) {
+    .margeEdit-container{
+      width: 100%;
+    }
+  }
+ 
+  .DefectBox{
+      width: 100%;
+      height: 180px;
+      display: grid;
+      place-content: center;
+      overflow: hidden;
+  }
+   // when info open
+  // height: calc(100vh - 28.8rem);
+  .DefectContainer{
+    // height: calc(100vh - 13.8rem);
+      overflow-y: scroll;
+  }
+    // when info open
+   //  height: calc(100vh - 28.7rem);
+  .CanvasBox{
+    display: grid;
+    grid-template-columns: 100%;
+    // height: calc(100vh - 12.7rem);
+    overflow: auto;
+  }
+  .h-85{
+    height: 85% !important;
+  }
+  .h-15{
+    height: 15% !important;
+  }
+  .w-85{
+    width: 85% !important;
+  }
+  .bg-trans{
+    background-color: transparent !important; 
+  }
+  .blink{
+   transition: all 1s;
+   animation: zoom-in-zoom-out 1s ease infinite;
+  }
+  @keyframes zoom-in-zoom-out {
+    0% {
+      transform: scale(1, 1);
+    }
+    50% {
+      transform: scale(1.03, 1.03);
+    }
+    100% {
+      transform: scale(1, 1);
+    }
+  }
+  .Rotate{
+    transition: all 1s;
+    animation: Rotate 4s ease-in-out infinite;
+   }
+   @keyframes Rotate {
+    0% {
+     transform: rotate(0deg);
+    }
+  
+    100% {
+      transform: rotate(360deg);
+
+    }
+  }
+
+
+
+.bg-teal-light{
+  transition: all 3s;
+  background-color: #1c87c9;
+  -webkit-animation: glowing-1 1300ms infinite;
+  -moz-animation: glowing-1 1300ms infinite;
+  -o-animation: glowing-1 1300ms infinite;
+  animation: glowing-1 1300ms infinite;
+}
+
+@keyframes glowing-1 {
+0% {
+  background-color: #0091b2;
+  -webkit-box-shadow: 0 0 3px #0091b2;
+}
+50% {
+  background-color: #21c7ed;
+  -webkit-box-shadow: 0 0 15px #21c7ed;
+}
+100% {
+  background-color: #0091b2;
+  -webkit-box-shadow: 0 0 3px #0091b2;
+}
+}
+
+.bg-red-light{
+  transition: all 3s;
+  background-color: #d00202;
+  -webkit-animation: glowing-2 1300ms infinite;
+  -moz-animation: glowing-2 1300ms infinite;
+  -o-animation: glowing-2 1300ms infinite;
+  animation: glowing-2 1300ms infinite;
+}
+@keyframes glowing-2 {
+  0% {
+    background-color: #e11d48;
+    box-shadow: 0 0 5px #e11d48;
+  }
+  50% {
+    background-color: #ff2151;
+    box-shadow: 0 0 20px #ff2151;
+  }
+  100% {
+    background-color: #e11d48;
+    box-shadow: 0 0 5px #e11d48;
+  }
+}
+.bg-green-light{
+  transition: all 3s;
+  background-color: #2ba805;
+  -webkit-animation: glowing-3 1300ms infinite;
+  -moz-animation: glowing-3 1300ms infinite;
+  -o-animation: glowing-3 1300ms infinite;
+  animation: glowing-3 1300ms infinite;
+}
+@keyframes glowing-3 {
+  0% {
+    background-color: #2ba805;
+    box-shadow: 0 0 5px #2ba805;
+  }
+  50% {
+    background-color: #49e819;
+    box-shadow: 0 0 20px #49e819;
+  }
+  100% {
+    background-color: #2ba805;
+    box-shadow: 0 0 5px #2ba805;
+  }
+ 
+}
+.canvas-container {
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  
+}
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #030303cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loader-logo {
+  max-width: 50%; 
+  max-height: 50%;
+  margin:0 auto;
+}
+.loader-text {
+  position: absolute;
+  top: calc(20% + 230px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 30px;
+}
+.text-lg {
+  font-size: 0.7rem !important;
+}
+// .text-base {
+// font-size: 0.675rem !important;
+// }
+.text-base-defect {
+  font-size: 0.425rem !important;
+  }
+/* Smooth horizontal scroll */
+.no-scrollbar {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Optional: subtle snap alignment */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+}
+.scroll-snap-item {
+  scroll-snap-align: start;
+}
+
+/* Smooth hover effect */
+.slider-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.slider-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+

@@ -1,0 +1,1649 @@
+<div class="margeEdit-container">
+  <div
+    class="relative overflow-x-auto  px-4 sm:px-4 py-2 w-full Body-height"
+  >
+    <!-- tabs Design start -->
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="flex gap-5 items-center w-full md:w-1/2">
+        <img
+          src="assets/images/cards/arrow.png"
+          class="w-5 cursor-pointer"
+          alt=""
+          routerLink="/roll-details"
+        />
+        <div class="flex w-full md:max-w-lg rounded-lg overflow-hidden gap-2">
+          <!-- routerLink="/review" -->
+          <a
+            (click)="redirectPageAndToggleData()"
+            class="w-full flex justify-center font-medium px-5 py-2 border-t border-b bg-brandColor text-white border-transparent hover:bg-gray-800 rounded-lg shadow"
+          >
+            {{ 'merge_and_edit' | transloco }}
+          </a>
+          <!-- routerLink="/role-width"  -->
+          <a
+            *ngIf="RollWidthButtonStatus && rollwidthTabStatus"
+            (click)="getQualityCodefilter()"
+            class="w-full flex justify-center font-medium rounded-lg px-5 py-2 border bg-white text-gray-800 border-gray-200 hover:bg-gray-100 shadow"
+          >
+            {{ 'roll_width' | transloco }}
+          </a>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6 pr-4 mb-2">
+        <div class="flex items-center gap-3 bg-white rounded-md p-2">
+          <div class="flex gap-2 border-r pr-2">
+            <span class="font-bold text-base text-blue">{{ 'roll_id' | transloco }}</span>
+            <span class="font-normal text-base word-wrap">
+              {{ this.role_data.customer_roll_id }}
+            </span>
+          </div>
+
+          <!-- Filter Button -->
+          <button
+            type="submit"
+            (click)="toggleFilter()"
+            class="w-8 h-8 bg-brandColor flex justify-center items-center rounded-full"
+          >
+            <img
+              src="../../../../../assets/icons/filter.svg"
+              alt="Filter"
+              class="w-1/2"
+            />
+          </button>
+        </div>
+     
+      </div>
+    </div>
+    <!-- tabs Design end -->
+
+    <div
+      *ngIf="showFilter"
+      [ngClass]="{
+        'grid grid-cols-1 gap-3 mb-1': true,
+        'md:grid-cols-4': applyFilterStatus
+      }"
+    >
+      <div class="w-full rounded overflow-hidden shadow bg-white py-2 px-2">
+        <h5 class="text-xl text-gray-900 font-bold border-b py-2 text-center">
+          {{ 'roll_details' | transloco }}
+        </h5>
+        <div>
+          <div class="px-2">
+            <div class="font-bold text-lg mt-1">
+              <div class="grid grid-cols-1 md:grid-cols-3 w-full">
+                <div class="flex flex-col gap-1 border-r pl-2">
+                  <span class="font-bold text-base text-blue">{{ 'roll_id' | transloco }}</span
+                  ><span class="font-normal text-base word-wrap">
+                    {{ this.role_data.customer_roll_id }}</span
+                  >
+                </div>
+                <div class="flex flex-col gap-1 pl-2">
+                  <span class="font-bold text-base text-blue">{{ 'total_defects' | transloco }}</span
+                  ><span class="font-normal text-base mb-2 word-wrap">
+                    {{ this.role_data.defect_count }}</span
+                  >
+                </div>
+                <div class="flex flex-col gap-1 border-r pl-2">
+                  <span class="font-bold text-base text-start text-blue">
+                    {{ 'score' | transloco }}</span
+                  ><span class="font-normal text-base word-wrap">{{
+                    this.role_data.score
+                      ? (this.role_data.score | number : "1.2-2")
+                      : "-"
+                  }}</span>
+                </div>
+                <div class="flex flex-col gap-1 border-r pl-2">
+                  <span class="font-bold text-base text-start text-blue">
+                    {{ 'quality_code' | transloco }}</span
+                  ><span class="font-normal text-base word-wrap">
+                    {{
+                    !this.role_data?.quality_code ||
+                    this.role_data.quality_code === 'NA' ||
+                    this.role_data.quality_code === 'N/A'
+                    ? ('null' | transloco)
+                    : this.role_data.quality_code
+                    }}
+                  </span>
+                </div>
+                <div class="flex flex-col gap-1 border-r pl-2">
+                  <span class="font-bold text-base text-start text-blue">
+                    {{ 'recipe' | transloco }}</span
+                  ><span class="font-normal text-base word-wrap">{{
+                    this.role_data?.recipes ? this.role_data.recipes : ""
+                  }}</span>
+                </div>
+                <div class="flex flex-col gap-1 border-r pl-2">
+                  <span class="font-bold text-base text-start text-blue">
+                    {{ 'loom_number' | transloco }}</span
+                  ><span class="font-normal text-base word-wrap">{{
+                    this.role_data?.first_loom_id
+                      ? this.role_data.first_loom_id
+                      : ""
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="applyFilterStatus" class="col-span-3 w-full">
+        <div class="">
+          <div class="">
+            <div class="w-full">
+              <form
+                [formGroup]="Form"
+                (ngSubmit)="onSubmit('filter', 'first'); addActivity('1')"
+              >
+                <div
+                  class="grid grid-cols-1 gap-2"
+                  [ngClass]="{
+                    'md:grid-cols-7': slitting_info.length > 0,
+                    'md:grid-cols-6': slitting_info.length === 0
+                  }"
+                >
+                  <div class="rounded shadow bg-white py-2 px-2">
+                    <h5
+                      class="text-xl text-gray-900 font-bold border-b py-2 text-center"
+                    >
+                      {{ 'ai_filter' | transloco }}
+                    </h5>
+                    <label
+                      class="block text-blue text-base font-bold mb-1"
+                      for="username"
+                    >
+                      {{ 'ai_agent' | transloco }}
+                    </label>
+                    <select
+                        (change)="loadModel($event.target.value)"
+                        formControlName="model_id"
+                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      >
+                        <option value="">{{ 'select_model' | transloco }}</option>
+                        <option *ngFor="let data of all_model_data" [value]="data.model_id">
+                          {{ data.model_name }}
+                        </option>
+                    </select>
+
+                    <label
+                      class="block text-blue text-base font-bold mb-1"
+                      for="username"
+                    >
+                      {{ 'defect_type' | transloco }}
+                    </label>
+                    <div class="flex flex-col gap-2 w-full">
+                      <ng-multiselect-dropdown
+                        class="w-full"
+                        [placeholder]="'select_type' | transloco"
+                        [settings]="dropdownSettings"
+                        [data]="dropdownList"
+                        formControlName="defect_type"
+                        (onSelect)="onItemSelect($event)"
+                        (onSelectAll)="onSelectAll($event)"
+                      ></ng-multiselect-dropdown>
+                    </div>
+                  </div>
+                  <div class="rounded shadow bg-white py-2 px-2">
+                    <h5
+                      class="text-xl text-gray-900 font-bold border-b py-2 text-center"
+                    >
+                      {{ 'size_filter' | transloco }}
+                    </h5>
+                    <label
+                      class="block text-blue text-base font-bold mb-1"
+                      for="DefectSize"
+                    >
+                      {{ 'defect_size_mm2' | transloco }}
+                    </label>
+                    <select
+                      formControlName="defect_size"
+                      class="appearance-none border rounded py-3 px-3 text-gray-700 leading-tight focus:outline-none text-center w-full"
+                      (change)="onOptionSelected($event.target.value)"
+                    >
+                      <option value="">{{ 'select' | transloco }}</option>
+                      <option value="<="><=</option>
+
+                      <option value=">=">>=</option>
+                      <option value="<>"><></option>
+                    </select>
+                    <div class="flex items-center gap-1 mt-2">
+                      <input
+                        maxlength="10"
+                        *ngIf="showFirstInput"
+                        formControlName="defect_size1"
+                        (keyup)="onInputFieldClick('defect_size1')"
+                        class="appearance-none border rounded w-4/12 md:w-2/5 py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                        type="text"
+                        [placeholder]="'value' | transloco"
+                        (keypress)="onKeyPress($event)"
+                      />
+                      <div *ngIf="isFieldClicked('defect_size1')">
+                        <div
+                          *ngIf="
+                            Form.get('defect_size1').hasError('pattern') &&
+                            !Form.get('defect_size1').hasError('required')
+                          "
+                          class="text-sm text-red-600"
+                        >
+                        {{ 'invalid_input' | transloco }}
+                        </div>
+                      </div>
+                      <div
+                        *ngIf="
+                          submitted &&
+                          Form.get('defect_size1').hasError('required')
+                        "
+                        class="text-sm text-red-600"
+                      >
+                      {{ 'value_required' | transloco }}
+                      </div>
+                      <label
+                        *ngIf="showBothInputs"
+                        class="block text-gray-700 text-xs font-bold mb-1"
+                        for="DefectSize"
+                      >
+                      {{ 'to' | transloco }}
+                      </label>
+                      <input
+                        maxlength="10"
+                        *ngIf="showBothInputs"
+                        formControlName="defect_size2"
+                        (keyup)="onInputFieldClick('defect_size2')"
+                        class="appearance-none border rounded w-4/12 md:w-2/5 py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                        type="text"
+                        [placeholder]="'value' | transloco"
+                        (keypress)="onKeyPress($event)"
+                      />
+                      <div *ngIf="isFieldClicked('defect_size2')">
+                        <div
+                          *ngIf="
+                            Form.get('defect_size2').hasError('lessThan') &&
+                            isTyping &&
+                            !Form.get('defect_size2').hasError('required')
+                          "
+                          class="text-xs text-red-600"
+                        >
+                          {{ 'value_must_be_greater' | transloco }}
+                        </div>
+                        <div
+                          *ngIf="
+                            Form.get('defect_size2').hasError('pattern') &&
+                            isTyping &&
+                            !Form.get('defect_size2').hasError('required')
+                          "
+                          class="text-sm text-red-600"
+                        >
+                          {{ 'invalid_input' | transloco }}
+                        </div>
+                      </div>
+                      <div
+                        *ngIf="
+                          submitted &&
+                          Form.get('defect_size2').hasError('required')
+                        "
+                        class="text-sm text-red-600"
+                      >
+                        {{ 'value_required' | transloco }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rounded shadow bg-white py-2 px-2">
+                    <h5
+                      class="text-xl text-gray-900 font-bold border-b py-2 text-center"
+                    >
+                      {{ 'location_filter' | transloco }}
+                    </h5>
+                    <label
+                      class="block text-blue text-base font-bold mb-1"
+                      for="Axis"
+                    >
+                      {{ 'axis_in_meter' | transloco }}
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
+                      <div class="flex items-center gap-2">
+                        <label
+                          class="block text-gray-700 text-base font-bold"
+                          for="AxisX"
+                        >
+                          {{ 'x' | transloco }}
+                        </label>
+                        <div>
+                          <input
+                            maxlength="10"
+                            formControlName="x_axis"
+                            (keyup)="onInputFieldClick('x_axis')"
+                            (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                            id="AxisX1"
+                            type="text"
+                            [placeholder]="'axis_placeholder' | transloco"
+                          />
+                          <div *ngIf="isFieldClicked('x_axis')">
+                            <div
+                              *ngIf="
+                                Form.get('x_axis').hasError('pattern') &&
+                                !Form.get('x_axis').hasError('required')
+                              "
+                              class="text-sm text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <span class="block text-gray-700 text-sm font-bold"
+                          >{{ 'to' | transloco }}</span
+                        >
+                        <div>
+                          <input
+                            maxlength="10"
+                            formControlName="x_axis1"
+                            (keyup)="onInputFieldClick('x_axis1')"
+                            (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                            id="AxisX2"
+                            type="text"
+                            [placeholder]="'axis_placeholder' | transloco"
+                          />
+                          <div *ngIf="submitted && isFieldClicked('x_axis1')">
+                            <div
+                              *ngIf="
+                                Form.get('x_axis1').hasError('lessThan') &&
+                                isTyping &&
+                                !Form.get('x_axis1').hasError('required')
+                              "
+                              class="text-sm text-red-600"
+                            >
+                              {{ 'value_must_be_greater' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="
+                                Form.get('x_axis1').hasError('pattern') &&
+                                isTyping &&
+                                !Form.get('x_axis1').hasError('required')
+                              "
+                              class="text-sm text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <label
+                          class="block text-gray-700 text-base font-bold"
+                          for="AxisY"
+                        >
+                          {{ 'y' | transloco }}
+                        </label>
+                        <div>
+                          <input
+                            maxlength="10"
+                            formControlName="y_axis"
+                            (keyup)="onInputFieldClick('y_axis')"
+                            (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                            id="AxisY1"
+                            type="text"
+                            [placeholder]="'axis_placeholder' | transloco"
+                          />
+                          <div *ngIf="isFieldClicked('y_axis')">
+                            <div
+                              *ngIf="
+                                Form.get('y_axis').hasError('pattern') &&
+                                !Form.get('y_axis').hasError('required')
+                              "
+                              class="text-sm text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                        <span class="block text-gray-700 text-sm font-bold"
+                          >{{ 'to' | transloco }}</span
+                        >
+                        <div>
+                          <input
+                            maxlength="10"
+                            formControlName="y_axis1"
+                            (keyup)="onInputFieldClick('y_axis1')"
+                            (keypress)="onKeyPress($event)"
+                            class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                            id="AxisY2"
+                            type="text"
+                            [placeholder]="'axis_placeholder' | transloco"
+                          />
+                          <div *ngIf="submitted && isFieldClicked('y_axis1')">
+                            <div
+                              *ngIf="
+                                Form.get('y_axis1').hasError('lessThan') &&
+                                isTyping &&
+                                !Form.get('y_axis1').hasError('required')
+                              "
+                              class="text-sm text-red-600"
+                            >
+                              {{ 'value_must_be_greater' | transloco }}
+                            </div>
+                            <div
+                              *ngIf="
+                                Form.get('y_axis1').hasError('pattern') &&
+                                isTyping &&
+                                !Form.get('y_axis1').hasError('required')
+                              "
+                              class="text-sm text-red-600"
+                            >
+                              {{ 'invalid_input' | transloco }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rounded shadow bg-white py-2 px-2">
+                    <h5
+                      class="text-xl text-gray-900 font-bold border-b py-2 text-center"
+                    >
+                      {{ 'order_filter' | transloco }}
+                    </h5>
+                    <label
+                      class="block text-blue text-base font-bold mb-1"
+                      for=""
+                    >
+                      {{ 'asc_desc' | transloco }}
+                    </label>
+                    <select
+                      formControlName="sortOrder"
+                      class="appearance-none border rounded py-3 px-3 text-gray-700 leading-tight focus:outline-none text-center w-full"
+                    >
+                      <option value="Asc" selected>{{ 'asc' | transloco }}</option>
+                      <option value="Desc">{{ 'desc' | transloco }}</option>
+                    </select>
+                    <label
+                      class="block text-blue text-base font-bold mb-1"
+                      for="username"
+                    >
+                      {{ 'defect_status_filter' | transloco }}
+                    </label>
+                    <div class="flex flex-col gap-2 w-full">
+                      <ng-multiselect-dropdown
+                        class="w-full"
+                        [placeholder]="'select_status' | transloco"
+                        [settings]="defectStatusFilterSetting"
+                        [data]="defectStatusFilterList"
+                        formControlName="defect_status_filter"
+                        (onSelect)="onItemSelect($event)"
+                        (onSelectAll)="onSelectAll($event)"
+                      ></ng-multiselect-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="rounded shadow bg-white py-2 px-2 w-full">
+                    <h5
+                      class="text-xl text-gray-900 font-bold border-b py-2 text-center"
+                    >
+                      {{ 'camera_filter' | transloco }}
+                    </h5>
+
+                    <label class="block text-blue text-base font-bold mb-1">
+                      {{ 'camera_group' | transloco }}
+                    </label>
+
+                    <div class="flex flex-col gap-2 w-full">
+                      <ng-multiselect-dropdown
+                        class="w-full"
+                        [placeholder]="'select_group' | transloco"
+                        [settings]="dropdownSettings"
+                        [data]="groupOptions"
+                        formControlName="group_id"
+                        (onSelectAll)="onSelectAll($event)"
+                        (onDeSelectAll)="onDeSelectAll($event)"
+                      ></ng-multiselect-dropdown>
+                    </div>
+
+                    <!-- camera Filter -->
+                    <label class="block text-blue text-base font-bold mb-1">
+                      {{ 'cameras' | transloco }}
+                    </label>
+
+                    <div class="flex flex-col gap-2 w-full">
+                      <ng-multiselect-dropdown
+                        class="w-full"
+                        [placeholder]="'select_cameras' | transloco"
+                        [settings]="dropdownSettings"
+                        [data]="cameraOptions"
+                        formControlName="camera"
+                        (onSelectAll)="onSelectAll($event)"
+                        (onDeSelectAll)="onDeSelectAll($event)"
+                      ></ng-multiselect-dropdown>
+                    </div>
+                  </div>
+
+                  <div
+                    *ngIf="slitting_info.length > 0"
+                    class="rounded shadow bg-white py-2 px-2 w-full"
+                  >
+                    <h5
+                      class="text-xl text-gray-900 font-bold border-b py-2 text-center"
+                    >
+                      {{ 'slitting_filter' | transloco }}
+                    </h5>
+
+                    <ng-contaner *ngIf="slitting_info.length > 0">
+                      <label
+                        class="block text-blue text-base font-bold mb-1"
+                        for=""
+                      >
+                        {{ 'slitting_type' | transloco }}
+                      </label>
+                      <select
+                        formControlName="slitting_type"
+                        class="appearance-none border rounded py-3 px-3 text-gray-700 leading-tight focus:outline-none text-center w-full"
+                        (change)="
+                          onSlittingTypeOptionSelected($event.target.value)
+                        "
+                      >
+                        <option value="" selected>{{ 'select_type' | transloco }}</option>
+                        <option value="Width">{{ 'width_slitting' | transloco }}</option>
+                        <option value="Length">{{ 'length_slitting' | transloco }}</option>
+                      </select>
+                    </ng-contaner>
+
+                    <ng-contaner
+                      *ngIf="slitting_info.length > 0 && showXLocationDropdown"
+                    >
+                      <label
+                        class="block text-blue text-base font-bold mb-1"
+                        for=""
+                      >
+                        {{ 'width_slitting' | transloco }}
+                      </label>
+                      <select
+                        formControlName="selectedLocation"
+                        class="appearance-none border rounded py-3 px-3 text-gray-700 leading-tight focus:outline-none text-center w-full"
+                        (change)="onLocationChange('xAxis')"
+                      >
+                        <option value="" disabled>
+                          {{ 'select_x_axis_location' | transloco }}
+                        </option>
+                        <option *ngFor="let x of xLocationList" [ngValue]="x">
+                          {{ x.child_roll_id }}
+                        </option>
+                      </select>
+                    </ng-contaner>
+
+                    <ng-contaner
+                      *ngIf="slitting_info.length > 0 && showYLocationDropdown"
+                    >
+                      <label
+                        class="block text-blue text-base font-bold mb-1"
+                        for=""
+                      >
+                        {{ 'length_slitting' | transloco }}
+                      </label>
+                      <select
+                        formControlName="selectedLocation"
+                        class="appearance-none border rounded py-3 px-3 text-gray-700 leading-tight focus:outline-none text-center w-full"
+                        (change)="onLocationChange('yAxis')"
+                      >
+                        <option value="" disabled selected>
+                          {{ 'select_y_axis_location' | transloco }}
+                        </option>
+                        <option *ngFor="let y of yLocationList" [ngValue]="y">
+                          {{ y.child_roll_id }}
+                        </option>
+                      </select>
+                    </ng-contaner>
+                  </div>
+
+                  <div
+                    class="rounded shadow flex flex-col items-center justify-center bg-white gap-2 py-2 px-2"
+                  >
+                    <label class="inline-flex items-center cursor-pointer mb-3">
+                      <!-- Hidden checkbox -->
+                      <input
+                        type="checkbox"
+                        class="sr-only peer"
+                        formControlName="showUnmatched"
+                        (change)="onToggleChange()"
+                      />
+
+                      <!-- Modern toggle switch -->
+                      <div
+                        class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#073070]/30 dark:peer-focus:ring-[#073070]/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-[#073070] dark:peer-checked:bg-[#073070] peer-checked:after:translate-x-[28px] rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600"
+                      ></div>
+
+                      <!-- Label text -->
+                      <span
+                        class="ml-3 text-lg font-bold transition-colors duration-300"
+                        [ngClass]="{
+                          'text-[#073070]': showUnmatched,
+                          'text-gray-600': !showUnmatched
+                        }"
+                      >
+                        {{ 'invert_filter' | transloco }}
+                      </span>
+                    </label>
+
+                    <button
+                      type="submit"
+                      class="w-full brand-button p-3 px-4 text-white rounded-lg"
+                    >
+                      {{ 'go' | transloco }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="resetForm()"
+                      class="w-full bg-rose-600 p-3 px-4 text-white rounded-lg"
+                    >
+                      {{ 'reset' | transloco }}
+                    </button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-2"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex">
+      <!-- left content -->
+      <div
+        class="transition-all duration-300 relative"
+        [ngClass]="{ 'w-1/4': isLeftExpanded, 'w-[0px]': !isLeftExpanded }"
+      >
+        <button
+          (click)="toggleLeft()"
+          class="w-8 h-8 rounded-full flex items-center justify-center bg-brandColor text-white absolute top-[50%] right-[-15px]"
+        >
+          <mat-icon
+            class="text-white"
+            [svgIcon]="
+              isLeftExpanded
+                ? 'heroicons_solid:chevron-left'
+                : 'heroicons_solid:chevron-right'
+            "
+          ></mat-icon>
+        </button>
+        <div *ngIf="isLeftExpanded">
+          <div>
+            <div class="bg-brandColor flex items-center justify-between">
+              <h4 class="font-bold text-lg p-2">{{ 'map' | transloco }}</h4>
+            </div>
+            <div
+              class="CanvasBox border-4"
+              [ngStyle]="{
+                height: isExpanded
+                  ? 'calc(100vh - 27.0rem)'
+                  : 'calc(100vh - 13.3rem)'
+              }"
+            >
+              <div
+                echarts
+                [options]="options"
+                class="chart"
+                (chartInit)="onChartInit($event)"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Center content-->
+      <div class="flex-1 transition-all duration-300 px-4">
+        <div class="col-span-2 w-full rounded overflow-hidden shadow bg-white">
+          <div class="w-full bg-brandColor">
+            <h4 class="font-bold text-lg p-2">{{ 'defect_crop_images' | transloco }}</h4>
+          </div>
+          <div class="w-full flex justify-between pl-4 md:pr-6 pr-4 py-2">
+            <div class="flex items-center gap-3">
+              <button
+                *ngIf="
+                  (role_data.roll_status === 1 ||
+                    role_data.roll_status === 2 || 
+                    role_data.roll_status === 5) &&
+                  doneReviewStatus
+                "
+                (click)="update_roll()"
+                class="bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-2 px-4 rounded"
+              >
+                {{ 'done' | transloco }}
+              </button>
+              <div class="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selectedAll"
+                  (change)="onSelectAllChange()"
+                  class="bg-blue-950 h-4 w-4 cursor-pointer"
+                />
+                {{ 'select_all' | transloco }}<span>({{checkedItems.length}})</span>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="flex items-center gap-2">
+                <button
+                  *ngIf="
+                    perDefectCount < TotalFilterDefectCount &&
+                    !isLoading &&
+                    showLoadMoreButton &&
+                    loadMoreDefectsStatus
+                  "
+                  type="button"
+                  (click)="loadData(); addActivity('2')"
+                  class="border border-gray-300 text-gray-600 font-semibold py-2 px-2 rounded flex items-center gap-1"
+                  [disabled]="isLoading"
+                >
+                  {{ 'load_more' | transloco }} <mat-icon svgIcon="keyboard_arrow_down"></mat-icon>
+                </button>
+                <span>{{ 'defects' | transloco }}</span>
+                <input
+                  class="appearance-none border rounded w-24 py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+                  type="number"
+                  placeholder=""
+                  value="{{ perDefectCount }}"
+                  readonly
+                />
+                <span
+                  >{{ 'of' | transloco }}
+                  {{
+                    TotalFilterDefectCount ? TotalFilterDefectCount : "0"
+                  }}</span
+                >
+              </div>
+              <ng-container
+                *ngIf="
+                  deleteDefectsStatus && (roll_quality_code_detail?.quality_code ? role === 'admin' || showUnmatched : true)
+                "
+              >
+                <button
+                  *ngIf="!isAllDefectsAreDeleted; else undelete"
+                  class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 px-4 rounded"
+                >
+                  <span class="hidden md:block" (click)="showBoxModal()"
+                    >{{ 'delete' | transloco }}</span
+                  >
+                  <span class="flex md:hidden"
+                    ><mat-icon
+                      svgIcon="heroicons_solid:trash"
+                      class="text-white"
+                    ></mat-icon
+                  ></span>
+                </button>
+                <ng-template #undelete>
+                  <button *ngIf="undeleteDefectStatus"
+                    (click)="undelete_defect()"
+                    class="bg-green-700 hover:bg-green-800 font-semibold text-white py-2 px-4 border border-green-700 hover:border-transparent rounded tracking-widest"
+                  >
+                    {{ 'undelete' | transloco }}
+                  </button>
+                </ng-template>
+              </ng-container>
+
+              <!-- no-checkbox-selected-for-delete-popup-start -->
+              <div
+                *ngIf="selectCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/4 overflow-auto shadow-lg p-2 border border-gray-500"
+                >
+                  <!-- modal header -->
+                  <div
+                    class="flex flex-col items-center justify-between border-b px-4 py-2"
+                  >
+                    <div class="flex justify-center">
+                      <i class="fas fa-info-circle text-blue-500 text-2xl"></i>
+                    </div>
+                  </div>
+                  <!-- modal body -->
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <div
+                      class="flex flex-col items-center justify-between px-4 py-2"
+                    >
+                      <h4 class="text-xl text-black font-semibold">
+                        {{ 'please_select_at_least_one_image' | transloco }}
+                      </h4>
+                    </div>
+
+                    <div class="w-full flex items-center justify-center pt-2">
+                      <button
+                        (click)="closeCheckbox()"
+                        class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1"
+                      >
+                        {{ 'ok' | transloco }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- no-checkbox-selected-for-delete-popup-end-->
+              <!-- delete pop-up start here -->
+              <!-- modal start -->
+              <div
+                *ngIf="showModal"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2"
+                >
+                  <!-- modal header -->
+                  <div
+                    class="flex items-center justify-between border-b px-4 py-2"
+                  >
+                    <h4 class="text-lg text-black font-semibold">
+                      {{ 'delete_defect' | transloco }}
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <h1 class="text-lg font-semibold text-black mb-4">
+                      {{ 'do_you_want_to_delete_the' | transloco }}
+                      {{ this.checkedItems.length }} {{ 'selected_defects_question' | transloco }}
+                    </h1>
+                    <div
+                      class="w-full flex items-center justify-center md:justify-start gap-5"
+                    >
+                      <button
+                        (click)="delete_defect()"
+                        class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest"
+                      >
+                        {{ 'delete' | transloco }}
+                      </button>
+                      <button
+                        (click)="closeBoxModal()"
+                        class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                      >
+                        {{ 'cancel' | transloco }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- modal end -->
+              <!-- delete pop-up end here -->
+              <button
+                *ngIf="mergeDefectsStatus && !isAllDefectsAreDeleted"
+                (click)="onCheckboxMerge(defect_type); showBoxModal1()"
+                class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+              >
+                <span class="hidden md:block">{{ 'merge' | transloco }}</span>
+                <span class="flex md:hidden"
+                  ><mat-icon
+                    svgIcon="heroicons_solid:plus"
+                    class="text-white"
+                  ></mat-icon
+                ></span>
+              </button>
+              <button *ngIf="addSpliceStatus && role !== 'operator'" (click)="openSpliceModal()"
+                class="flex items-center justify-center bg-brandColor w-11 h-11 rounded-full hover:bg-brandColor/90 transition duration-300 ease-in-out shadow-md">
+              
+                <mat-icon class="text-white text-[22px]">add</mat-icon>
+              
+              </button>
+              <!-- no-checkbox-selected-for-merge-popup-start -->
+              <div
+                *ngIf="mergeCheck"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/4 overflow-auto shadow-lg p-2 border border-gray-500"
+                >
+                  <!-- modal header -->
+                  <div
+                    class="flex flex-col items-center justify-between border-b px-4 py-2"
+                  >
+                    <div class="flex justify-center">
+                      <i class="fas fa-info-circle text-blue-500 text-2xl"></i>
+                    </div>
+                  </div>
+                  <!-- modal body -->
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <div
+                      class="flex flex-col items-center justify-between px-4 py-2"
+                    >
+                      <h4 class="text-xl text-black font-semibold">
+                        {{ 'please_select_at_least_two_images' | transloco }}
+                      </h4>
+                    </div>
+
+                    <div class="w-full flex items-center justify-center pt-2">
+                      <button
+                        (click)="closeMergeCheckbox()"
+                        class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1"
+                      >
+                        {{ 'ok' | transloco }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- no-checkbox-selected-for-merge-popup-end-->
+              <!-- merge pop-up start here -->
+              <!-- modal start -->
+              <div
+                *ngIf="showModal1"
+                class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+              >
+                <div
+                  class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2"
+                >
+                  <!-- modal header -->
+                  <div
+                    class="flex items-center justify-between border-b px-4 py-2"
+                  >
+                    <h4 class="text-lg text-black font-semibold">
+                      {{ 'merge_defect' | transloco }}
+                    </h4>
+                  </div>
+                  <!-- modal body -->
+                  <div class="p-3 overflow-y-auto max-h-full">
+                    <h1 class="text-lg font-semibold text-black mb-4">
+                      {{ 'merge_defect_confirmation' | transloco }}
+                    </h1>
+                    <label
+                      class="block text-gray-700 text-base font-bold mb-2"
+                      for="username"
+                      >{{ 'defect_type_label' | transloco }}</label
+                    >
+                    <select
+                      class="appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none mb-1"
+                      [(ngModel)]="merge_defectType"
+                      name="merge_defectType"
+                    >
+                      <option value="">{{ 'select_defect_type' | transloco }}</option>
+                      <option
+                        *ngFor="let defect of selectedDefectTypes"
+                        [value]="defect.defect_name"
+                      >
+                        {{ defect.defect_name }}
+                      </option>
+                    </select>
+                    <div
+                      *ngIf="!defectTypeSelected && displayDefectTypeError"
+                      class="text-rose-600 text-sm mb-1"
+                    >
+                      {{ 'please_select_defect_type' | transloco }}
+                    </div>
+                    <div
+                      class="w-full flex items-center justify-center md:justify-start gap-5 mt-2"
+                    >
+                      <button
+                        (click)="merge_defect()"
+                        class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest"
+                      >
+                        {{ 'merge' | transloco }}
+                      </button>
+                      <button
+                        (click)="closeBoxModal1()"
+                        class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+                      >
+                        {{ 'cancel' | transloco }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- modal end -->
+              <!-- merge pop-up end here -->
+            </div>
+          </div>
+          <div
+            class="DefectContainer mt-4 overflow-y-auto"
+            [ngStyle]="{
+              height: isExpanded
+                ? 'calc(100vh - 31.5rem)'
+                : 'calc(100vh - 18.1rem)'
+            }"
+            #listdefectContainer
+          >
+            <div
+              *ngIf="AllDefectsData.length === 0"
+              class="w-full h-full flex justify-center items-center font-semibold text-black text-center upercase-text text-lg"
+            >
+              {{ 'no_defect_found' | transloco }}
+            </div>
+            <div
+              *ngIf="!(getLoaderState() | async)"
+              class="grid px-4 py-2 gap-3"
+              [ngClass]="getGridClass()"
+            >
+              <div
+                class="rounded-lg overflow-hidden"
+                *ngFor="let defect of AllDefectsData; let i = index"
+                [style.border]="'2px solid ' + getDefectColor(defect.defect_type)"
+              >
+                <div class="DefectBox relative">
+                  <div *ngIf="all_model_data && all_model_data.length > 0" class="absolute left-3 top-3 z-10 flex items-center gap-2">
+                    <div class="rounded-md flex items-center gap-1 px-2" [ngClass]="{
+                                        'bg-red-600': getDefectClass(defect.defect_type) !== getSuggestion(defect),
+                                        'bg-brandColor': getDefectClass(defect.defect_type) === getSuggestion(defect)
+                                      }">
+                      <mat-icon svgIcon="heroicons_solid:sparkles" class="text-yellow-300"></mat-icon>
+                      <div *ngIf="!updateAiSuggestionStatus" class="px-1 cursor-pointer" (click)="openCustomSuggestionMenu(defect.id)">
+                        <div class="text-white text-sm p-2.5">
+                          {{ defect.user_suggestion || ('select' | transloco) }}
+                        </div>
+                      </div>
+                
+                      <!-- Edit Mode -->
+                      <div *ngIf="updateAiSuggestionStatus" class="px-1">
+                        <select class="text-white text-sm p-2.5" [ngClass]="{
+                    'bg-red-600': getDefectClass(defect.defect_type) !== getSuggestion(defect),
+                    'bg-brandColor': getDefectClass(defect.defect_type) === getSuggestion(defect)
+                  }" (change)="sendUserDefectSuggestion($event, defect)" [ngModel]="
+                    defect.user_suggestion
+                      ? defect.user_suggestion
+                      : defect.ai_suggestion
+                      ? defect.ai_suggestion
+                      : ''
+                  ">
+                          <option value="">{{ 'select' | transloco }}</option>
+                          <option *ngFor="let data of ai_suggestion_data" [value]="data">
+                            {{ data }}
+                          </option>
+                          <option value="NA">NA</option>
+                        </select>
+                      </div>
+                    </div>
+                
+                    <!-- 🔹 Points Dropdown (Side by Side) -->
+                    <div *ngIf="pointOptions && pointOptions.length > 0" class="rounded-md bg-white border border-black px-1 w-fit">
+                      <select class="bg-white text-black text-sm p-2.5 outline-none border-none cursor-pointer w-auto max-w-[80px]"
+                        (change)="onPointChange(defect, $event)" [(ngModel)]="defect.points">
+                        <option *ngFor="let p of pointOptions" [value]="p">
+                          {{ p }} Pt
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <img alt="defect image" (click)="checboxchecked(defect.defect_id)" (dblclick)="imagePopupOpen(defect)"
+                    class="h-72 object-cover relative z-0" src="{{ imagebasepath + defect.cropped_image_path }}"
+                    [style.filter]="imageAdjusterFilter" width="100%" alt="" />
+                  <div class="absolute right-2 top-3 flex gap-2 items-center">
+                
+                    <!-- Scissor icon only when needed -->
+                    <label *ngIf="spliceDefectIds.includes(defect.defect_id)" class="bg-brandColor p-1 rounded">
+                      <img src="assets/icons/cut-with-scissors.png" alt="Cut" class="w-5 h-5 object-contain invert" />
+                    </label>
+                
+                    <!-- Checkbox -->
+                    <label style="margin-top: 5px;">
+                      <input type="checkbox" class="bg-blue-950 h-6 w-6 cursor-pointer" (change)="onCheckboxChange(defect.defect_id)"
+                        [checked]="isChecked(defect?.defect_id)" id="checkbox_{{ defect.defect_id }}" />
+                    </label>
+                
+                  </div>
+                </div>
+                <div class="flex items-center w-full bg-brandColor border-b">
+                  <div class="bg-brandColor p-2">
+                    <p class="font-bold text-sm">D{{ defect.defect_id }}</p>
+                  </div>
+                  <div
+                    class="brand-button flex items-center gap-1 bg-brandColor p-2 h-full flex-shrink-0"
+                  >
+                    <p class="font-bold text-sm">
+                      {{
+                        defect.defect_top_left_x_mm / this.metercal
+                          | number : "1.2-2"
+                      }},
+                      {{
+                        defect.defect_top_left_y_mm / this.metercal
+                          | number : "1.2-2"
+                      }}
+                    </p>
+
+                    <!-- <p class="font-bold text-sm">
+                    </p> -->
+
+                    <p class="font-bold text-sm">
+                      ({{ defect.defect_width_mm | number : "1.0-0" }} X
+                      {{ defect.defect_height_mm | number : "1.0-0" }})
+                    </p>
+
+                    <!-- <p class="font-bold text-sm">
+                    </p> -->
+                  </div>
+                  <div
+                    class="flex items-center gap-2 bg-brandColor p-2 truncate cursor-pointer flex-1 min-w-0"
+                    (click)="openChangeDefectNamePopup(defect, i)"
+                  >
+                    <p class="font-bold text-sm truncate-text">
+                      {{ defect.defect_type }}
+                    </p>
+                  </div>
+                  <div class="ml-auto flex items-center pr-2 flex-shrink-0">
+                    <span
+                      class="inline-block pb-2 w-4 h-4 rounded-full border border-white shadow"
+                      [ngStyle]="{
+                        'background-color':
+                          defect.is_enabled == 1 ? '#ef4444' : '#22c55e'
+                      }"
+                      [title]="(defect.is_enabled == 1 ? 'enabled' : 'disabled') | transloco"
+                    ></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- defect name change popup -->
+      <div
+        *ngIf="showChangeDefectNamePopup"
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20"
+      >
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-xl p-6 relative">
+          <!-- Close Button -->
+          <button
+            (click)="closeChangeDefectNamePopup()"
+            class="absolute top-3 right-3 flex items-center justify-center rounded-full hover:bg-gray-300 shadow-sm transition-all"
+            aria-label="Close"
+          >
+            <img
+              src="assets/icons/icons8-cross.png"
+              alt="Close"
+              class="w-8 h-8 object-contain"
+            />
+          </button>
+          <!-- Header -->
+          <div class="w-full mb-6">
+            <h2 class="text-lg font-semibold text-gray-800">
+              {{ 'select_or_add_defect' | transloco }}
+            </h2>
+          </div>
+
+          <!-- Input and Dropdown -->
+          <div class="w-full relative mb-6">
+            <label
+              for="defectDropdown"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              {{ 'defect_name' | transloco }}
+            </label>
+            <input
+              id="defectDropdown"
+              type="text"
+              [(ngModel)]="searchTerm"
+              (input)="filterOptions()"
+              (focus)="showDropdown = true"
+              (blur)="hideDropdownWithDelay()"
+              [placeholder]="'type_or_select' | transloco"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <ul
+              *ngIf="showDropdown && filteredDefects.length > 0"
+              class="absolute z-10 w-full border border-gray-300 bg-white mt-1 rounded-md shadow-lg max-h-48 overflow-y-auto transition-all"
+            >
+              <li
+                *ngFor="let defect of filteredDefects"
+                (click)="selectDefect(defect.item_text)"
+                class="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+              >
+                {{ defect.item_text }}
+              </li>
+            </ul>
+            <p
+              *ngIf="showDropdown && filteredDefects.length === 0"
+              class="text-sm text-center text-gray-500 mt-2"
+            >
+              {{ 'no_matching_defects_found' | transloco }}
+            </p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex justify-end space-x-3">
+            <button
+              (click)="closeChangeDefectNamePopup()"
+              class="text-gray-600 border border-gray-400 rounded-md px-4 py-2 hover:bg-gray-100 transition"
+            >
+              {{ 'cancel' | transloco }}
+            </button>
+            <button
+              (click)="saveSelectedDefect()"
+              class="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition"
+            >
+              {{ 'save' | transloco }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- defect name change popup -->
+
+      <div
+        *ngIf="showDefectPopup"
+        class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50"
+      >
+        <div
+          class="bg-white rounded w-full md:w-2/3 lg:w-3/4 xl:w-4/5 shadow-lg p-4 flex flex-col items-center"
+          style="height: auto; max-height: 95vh"
+        >
+          <div class="flex justify-end w-full">
+            <button
+              (click)="closeDefectImagePopup()"
+              class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+            >
+              {{ 'close' | transloco }}
+            </button>
+          </div>
+
+          <div
+            class="p-3 flex flex-col justify-center items-center gap-4 w-full"
+          >
+            <div *ngIf="showDefect"
+              class="image-container flex justify-center items-center w-full overflow-hidden"
+              (wheel)="zoomImage($event)"
+              (mousedown)="onMouseDown($event)"
+              (mousemove)="onMouseMove($event)"
+              (mouseup)="onMouseUp()"
+              (mouseleave)="onMouseUp()"
+              style="height: auto; position: relative"
+            >
+              <!-- Wrapper that will be zoomed & panned -->
+              <div
+                class="relative"
+                [style.transform]="
+                  'translate(' +
+                  pointX +
+                  'px,' +
+                  pointY +
+                  'px) scale(' +
+                  zoomLevel +
+                  ')'
+                "
+                style="transform-origin: 0 0"
+              >
+                <!-- Main Image -->
+                <img
+                  [src]="imagebasepath + popupDefectData.full_image_path"
+                  (load)="onImageLoad($event)"
+                  style="height: auto; max-height: 80vh"
+                  class="border-2 border-gray-50 object-contain"
+                  [style.filter]="imageAdjusterFilter"
+                />
+
+                <!-- Black box overlay for defect area -->
+                <div
+                  *ngIf="
+                    popupDefectData.defect_top_left_x_mm &&
+                    popupDefectData.defect_top_left_y_mm
+                  "
+                  [ngStyle]="{
+                    position: 'absolute',
+                    left:
+                      (popupDefectData.defect_top_left_x_px / imageWidth) *
+                        100 +
+                      '%',
+                    top:
+                      (popupDefectData.defect_top_left_y_px / imageHeight) *
+                        100 +
+                      '%',
+                    width:
+                      (popupDefectData.defect_width_px / imageWidth) * 100 +
+                      '%',
+                    height:
+                      (popupDefectData.defect_height_px / imageHeight) * 100 +
+                      '%',
+                    border: '2px solid red',
+                    
+                    pointerEvents: 'none'
+                  }"
+                ></div>
+              </div>
+            </div>
+
+            <div *ngIf="!showDefect"
+              class="image-container flex justify-center items-center w-full overflow-hidden"
+              (wheel)="zoomImage($event)"
+              (mousedown)="onMouseDown($event)"
+              (mousemove)="onMouseMove($event)"
+              (mouseup)="onMouseUp()"
+              (mouseleave)="onMouseUp()"
+              style="height: auto; position: relative"
+            >
+              <!-- Wrapper that will be zoomed & panned -->
+              <div
+                class="relative"
+                [style.transform]="
+                  'translate(' +
+                  pointX +
+                  'px,' +
+                  pointY +
+                  'px) scale(' +
+                  zoomLevel +
+                  ')'
+                "
+                style="transform-origin: 0 0"
+              >
+                <!-- Main Image -->
+                <img
+                  [src]="imagebasepath + popupDefectData.full_image_path"
+                  (load)="onImageLoad($event)"
+                  style="height: auto; max-height: 80vh"
+                  class="border-2 border-gray-50 object-contain"
+                  [style.filter]="imageAdjusterFilter"
+                />
+
+              </div>
+            </div>
+
+            <div class="flex items-center w-full bg-brandColor border-b">
+              <div class="bg-brandColor p-2">
+                <p class="font-bold text-base">
+                  D{{ popupDefectData.defect_id }}
+                </p>
+              </div>
+              <div
+                class="brand-button flex items-center gap-2 bg-brandColor p-2 truncate h-full"
+              >
+                <p class="font-bold text-base">
+                  {{
+                    popupDefectData.defect_top_left_x_mm / metercal
+                      | number : "1.2-2"
+                  }},
+                  {{
+                    popupDefectData.defect_top_left_y_mm / metercal
+                      | number : "1.2-2"
+                  }}
+                </p>
+                <!-- ------ -->
+                <p class="font-bold text-base">
+                  ({{ popupDefectData.defect_width_mm | number : "1.2-2" }} X
+                  {{ popupDefectData.defect_height_mm | number : "1.2-2" }})
+                </p>
+                <!-- -------  -->
+                <p class="font-bold text-base">
+                  {{ 'area' | transloco }}
+                  {{
+                    popupDefectData.defect_width_mm *
+                      popupDefectData.defect_height_mm | number : "1.0-0"
+                  }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2 bg-brandColor p-2 truncate">
+                <p class="font-bold text-base">
+                  {{ popupDefectData.defect_type }}
+                </p>
+                <p class="font-bold text-base">
+                  {{ 'group_id' | transloco }} {{ popupDefectData.group_id || ('na' | transloco) }}
+                </p>
+                <p class="font-bold text-base">
+                  {{ 'cam_id' | transloco }} {{ popupDefectData.cam_id || ('na' | transloco) }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2 bg-brandColor p-2 truncate">
+                <p class="font-bold text-base">{{ 'current_sensitivity' | transloco }}</p>
+              </div>
+              <div
+                class="brand-button flex items-center gap-2 bg-brandColor p-2 truncate h-full"
+              >
+                <p class="font-bold text-base">
+                  {{ 'x_axis_label' | transloco }} {{ popupDefectData.current_sensitivity_x ?? ('na' | transloco) }}
+                </p>
+                <p class="font-bold text-base">
+                  {{ 'y_axis_label' | transloco }} {{ popupDefectData.current_sensitivity_y ?? ('na' | transloco) }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2 bg-brandColor p-2 truncate">
+                <p class="font-bold text-base">{{ 'required_sensitivity' | transloco }}</p>
+              </div>
+              <div
+                class="brand-button flex items-center gap-2 bg-brandColor p-2 truncate h-full"
+              >
+                <p class="font-bold text-base">
+                  {{ 'x_axis_label' | transloco }} {{ popupDefectData.required_sensitivity_x ?? ('na' | transloco) }}
+                </p>
+                <p class="font-bold text-base">
+                  {{ 'y_axis_label' | transloco }} {{ popupDefectData.required_sensitivity_y ?? ('na' | transloco) }}
+                </p>
+              </div>
+              <label class="inline-flex items-center cursor-pointer ml-auto pr-2 flex-shrink-0">
+                <span class="mr-3 text-base font-bold transition-colors duration-300 bg-brandColor">
+                  {{ 'show_defect' | transloco }}
+                </span>
+              
+                <input type="checkbox" class="sr-only" [(ngModel)]="showDefect"/>
+              
+                <div class="relative w-14 h-7 rounded-full transition-colors duration-300 flex-shrink-0 min-w-[56px]" [ngClass]="{
+                    'bg-[#20acf4]': showDefect,
+                    'bg-gray-200': !showDefect
+                  }">
+                  <div class="absolute top-0.5 h-6 w-6 bg-white border border-gray-400 rounded-full transition-transform duration-300" [ngClass]="{
+                    'translate-x-[32px] border-[#20acf4]': showDefect,
+                    'translate-x-[0px] border-gray-400': !showDefect
+                    }"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- right -->
+      <div *ngIf="addEditNoteStatus"
+        class="transition-all duration-300 w-full rounded shadow bg-white relative"
+        [ngClass]="{ 'w-1/4': isRightExpanded, 'w-[0px]': !isRightExpanded }"
+      >
+        <button
+          (click)="toggleRight()"
+          class="w-8 h-8 rounded-full flex items-center justify-center bg-brandColor text-white absolute top-[50%] left-[-40px]"
+        >
+          <mat-icon
+            class="text-white"
+            [svgIcon]="
+              isRightExpanded
+                ? 'heroicons_solid:chevron-right'
+                : 'heroicons_solid:chevron-left'
+            "
+          ></mat-icon>
+        </button>
+        <div
+          *ngIf="isRightExpanded"
+          [ngStyle]="{
+            height: isExpanded
+              ? 'calc(100vh - 31.5rem)'
+              : 'calc(100vh - 10.8rem)'
+          }"
+        >
+          <div class="w-full">
+            <h4 class="font-bold text-lg p-2 bg-brandColor">{{ 'note' | transloco }}</h4>
+            <div class="flex justify-end gap-2 mt-3">
+              <button
+                (click)="saveNote()"
+                class="bg-blue-500 text-white px-6 py-3 rounded-md mr-2 mb-2"
+              >
+                {{ 'save' | transloco }}
+              </button>
+            </div>
+            <textarea
+              #noteTextarea
+              [(ngModel)]="notes"
+              rows="4"
+              class="w-full border rounded-md p-2 h-[800px]"
+              (input)="updateNoteValidation()"
+              (focus)="editNote()"
+            ></textarea>
+            <p *ngIf="isNoteTooLong" class="text-red-500 text-sm mt-1">
+              {{ 'note_limit_error' | transloco }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<svg width="0" height="0" class="absolute">
+  <defs>
+    <filter id="merge-edit-gamma-filter">
+      <feComponentTransfer>
+        <feFuncR type="gamma" amplitude="1" [attr.exponent]="1 / imageAdjustments.gamma" offset="0"></feFuncR>
+        <feFuncG type="gamma" amplitude="1" [attr.exponent]="1 / imageAdjustments.gamma" offset="0"></feFuncG>
+        <feFuncB type="gamma" amplitude="1" [attr.exponent]="1 / imageAdjustments.gamma" offset="0"></feFuncB>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+</svg>
+<div class="image-adjuster-anchor z-20">
+  <div *ngIf="showImageAdjusterPopup" class="image-adjuster-popup">
+    <div class="image-adjuster-header">
+      <span>{{ 'image_adjuster' | transloco }}</span>
+      <button type="button" (click)="resetImageAdjustments()">{{ 'reset_button' | transloco }}</button>
+    </div>
+    <label class="grid-item">
+      {{ 'grid_layout' | transloco }}
+      <select [(ngModel)]="selectedGrid" (change)="updateGridOptions()">
+        <option *ngFor="let option of gridOptions" [value]="option">
+          {{ option }}
+        </option>
+      </select>
+    </label>
+    <label>
+      {{ 'brightness' | transloco }}
+      <input type="range" min="0" max="300" step="1" [(ngModel)]="imageAdjustments.brightness" (input)="updateImageFilter()" />
+      <span>{{ imageAdjustments.brightness }}%</span>
+    </label>
+    <label>
+      {{ 'contrast' | transloco }}
+      <input type="range" min="0" max="300" step="1" [(ngModel)]="imageAdjustments.contrast" (input)="updateImageFilter()" />
+      <span>{{ imageAdjustments.contrast }}%</span>
+    </label>
+    <label>
+      {{ 'saturation' | transloco }}
+      <input type="range" min="0" max="300" step="1" [(ngModel)]="imageAdjustments.saturation" (input)="updateImageFilter()" />
+      <span>{{ imageAdjustments.saturation }}%</span>
+    </label>
+    <label>
+      {{ 'gamma' | transloco }}
+      <input type="range" min="0.2" max="3" step="0.1" [(ngModel)]="imageAdjustments.gamma" (input)="updateImageFilter()" />
+      <span>{{ imageAdjustments.gamma | number : "1.1-1" }}</span>
+    </label>
+  </div>
+  <button
+    type="button"
+    class="image-adjuster-arrow"
+    (click)="toggleImageAdjusterPopup()"
+    [attr.aria-label]="(showImageAdjusterPopup ? 'hide_image_adjuster' : 'show_image_adjuster') | transloco"
+    [title]="(showImageAdjusterPopup ? 'hide_image_adjuster' : 'show_image_adjuster') | transloco"
+  >
+    <span [class.open]="showImageAdjusterPopup">&#9650;</span>
+  </button>
+</div>
+<div *ngIf="getLoaderState() | async" class="loader-overlay">
+  <div class="loader-text">
+    <img src="assets/images/logo/logo.png" alt="Logo" class="loader-logo" />
+    <p class="mt-2">{{ 'defects_loading' | transloco }}</p>
+  </div>
+</div>
+
+<!-- Splice Model  -->
+<div *ngIf="showSpliceModal"
+  class="modal h-screen w-full p-2 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+  <div (click)="$event.stopPropagation()" class="bg-white rounded w-full md:w-2/4 overflow-auto shadow-lg p-4">
+    <form [formGroup]="spliceForm" (ngSubmit)="saveSpliceDetails()">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">{{ 'splice_details' | transloco }}</h3>
+        <button type="button" mat-icon-button (click)="closeSpliceModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="space-y-4">
+        <!-- Start Meter -->
+        <div>
+          <label class="block mb-2 text-base font-semibold text-gray-700">{{ 'start_meter' | transloco }}</label>
+          <input type="number" formControlName="start_meter"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brandColor"
+            [placeholder]="'enter_start_meter' | transloco" />
+          <small *ngIf="
+              f.start_meter?.touched && f.start_meter?.hasError('required')
+            " class="text-red-500">{{ 'start_meter_required' | transloco }}</small>
+        </div>
+
+        <!-- End Meter -->
+        <div>
+          <label class="block mb-2 text-base font-semibold text-gray-700">{{ 'end_meter' | transloco }}</label>
+          <input type="number" formControlName="end_meter"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brandColor"
+            [placeholder]="'enter_end_meter' | transloco" />
+          <small *ngIf="f.end_meter?.touched && f.end_meter?.hasError('required')" class="text-red-500">{{ 'end_meter_required' | transloco }}</small>
+          <small *ngIf="spliceForm.errors?.overInspectedLength && f.end_meter.touched" class="text-red-500">
+            {{ 'end_meter_greater_than_inspected' | transloco }} ({{ role_data.inspected_length }})
+          </small>
+          <small *ngIf="spliceForm.errors?.overlappingRange && f.end_meter.touched" class="text-red-500">
+            {{ 'range_overlaps_existing_splice' | transloco }}
+            ({{ spliceForm.errors.overlappingRange.oldStart }} to
+            {{ spliceForm.errors.overlappingRange.oldEnd }}).
+            {{ 'enter_non_overlapping_range' | transloco }}
+          </small>
+          <small *ngIf="spliceForm.errors?.fullCoverNotAllowed && (f.end_meter.touched || f.start_meter.touched)"
+            class="text-red-500">
+            {{ 'range_fully_covers_existing_splice' | transloco }}
+            ({{ spliceForm.errors?.fullCoverNotAllowed.oldStart }} -
+            {{ spliceForm.errors?.fullCoverNotAllowed.oldEnd }}),
+            {{ 'not_allowed' | transloco }}
+          </small>
+        </div>
+
+        <!-- Cross-field validation message -->
+        <div *ngIf="
+            spliceForm.errors?.invalidRange &&
+            (f.start_meter.touched || f.end_meter.touched)
+          ">
+          <small class="text-red-500">
+            {{ 'end_meter_greater_than_start' | transloco }}
+          </small>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-end gap-3 mt-6">
+        <!-- Delete — ONLY IF opened from map -->
+        <button *ngIf="isSpliceEditMode" type="button" class="px-8 py-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition" 
+        (click)="deleteSplice()">
+          {{ 'delete' | transloco }}
+        </button>
+        <button *ngIf="!isSpliceEditMode" type="submit" class="px-8 py-4 brand-button text-white rounded-lg transition">
+          {{ 'add' | transloco }}
+        </button>
+        <button *ngIf="isSpliceEditMode" type="submit" class="px-8 py-4 brand-button text-white rounded-lg transition">
+          {{ 'update' | transloco }}
+        </button>
+        <button type="button" class="px-8 py-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+          (click)="closeSpliceModal()">
+          {{ 'cancel' | transloco }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Confirmation Popup -->
+<div *ngIf="showDeleteConfirm"
+  class="modal h-screen w-full p-2 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+
+  <div class="bg-white p-6 rounded-lg w-full md:w-1/3 shadow-lg">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ 'confirm_delete' | transloco }}</h3>
+
+    <p class="text-gray-600 mb-6">
+      {{ 'delete_splice_confirmation' | transloco }}
+    </p>
+
+    <div class="flex justify-end gap-3">
+      <button type="button"
+        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+        (click)="showDeleteConfirm = false">
+        {{ 'cancel' | transloco }}
+      </button>
+
+      <button type="button"
+        class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+        (click)="confirmDeleteSplice()">
+        {{ 'yes_delete' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+.Delete-icon {
+  width: 30px;
+  height: 30px;
+  background-color: #ffe6e6;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #f8d6d6;
+    box-shadow: 0 0 10px rgba(255, 182, 182, 0.137);
+    transform: scale(1.05);
+  }
+  img {
+    width: 15px;
+    height: 15px;
+  }
+}
+.Edit-icon{
+    width: 30px;
+    height: 30px;
+    background-color: #CFE2FF;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+    &:hover {
+        background-color: #cce4ff;
+        box-shadow: 0 0 10px rgba(2, 255, 255, 0.137);
+        transform: scale(1.05);
+    }
+    img {
+        width: 15px;
+        height: 15px;
+    }
+}
+
+
+.time-wrapper {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 8px;
+  background: #fff;
+}
+
+.time-select {
+  border: none;
+  outline: none;
+  appearance: none;
+  background: transparent;
+  font-size: 14px;
+  padding: 0 4px;
+  cursor: pointer;
+  max-height: 40px; /* controls the closed select box height */
+  overflow-y: auto;
+}
+
+.time-select.hour {
+  width: 20%;
+}
+
+.time-select.minute {
+  width: 20%;
+}
+
+.separator {
+  color: #6b7280;
+  padding: 0 4px;
+  user-select: none;
+}
+.time-select:has(option[value=""]:checked) {
+  color: #9ca3af; /* placeholder grey */
+}
+
+.time-input {
+  width: 100%;
+  // padding: 8px;
+  // border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.picker-panel {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  display: flex;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  z-index: 1000;
+}
+
+.column {
+  width: 60px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.item {
+  padding: 6px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #f1f1f1;
+}
+
+.item.active {
+  background: #1a73e8;
+  color: #fff;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+tbody {
+  display: block;
+}
+
+tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.cdk-drag-preview {
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms ease;
+}
+
+.cdk-drop-list-dragging tr:not(.cdk-drag-placeholder) {
+  transition: transform 250ms ease;
+}
+
+.cdk-drag {
+  transition: transform 250ms ease !important;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms ease !important;
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms ease !important;
+}

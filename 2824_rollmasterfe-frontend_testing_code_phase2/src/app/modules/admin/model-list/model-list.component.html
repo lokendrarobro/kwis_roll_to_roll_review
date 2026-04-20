@@ -1,0 +1,283 @@
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg px-4 sm:px-4 py-2 w-full">
+  <div class="flex items-center gap-3 text-3xl">
+    <mat-icon svgIcon="heroicons_solid:arrow-left" routerLink="/roll-details"
+      class="font-bold text-gray-900 text-sm cursor-pointer"></mat-icon>
+    <h4 class="font-bold">{{ 'ai_agents' | transloco }}</h4>
+  </div>
+  <form *ngIf="applyFilterStatus" [formGroup]="Form" (ngSubmit)="onSubmit('filter')">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+      <div class="w-full rounded shadow bg-white py-2 px-2">
+        <div class="">
+          <div class="flex items-center justify-between w-full">
+            <span class="font-bold text-base text-blue whitespace-nowrap">{{ 'ai_agent_label' | transloco }}</span>
+            <div *ngIf="isdeleteBtnShow && deleteModelStatus">
+              <button (click)="showPopupforDeleteModel()" type="button"
+                class="text-red-500 font-medium text-sm p-2.5 text-center inline-flex items-center">
+                <mat-icon class="text-red-500">delete</mat-icon>
+              </button>
+            </div>
+          </div>
+  
+          <select formControlName="model_type" id="model"
+            class="bg-gray-50 mt-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            (change)="checkmodeltype($event)">
+            <option value=0>{{ 'select_model' | transloco }}</option>
+            <option *ngFor="let data of all_model_data" [value]="data.model_id">{{ data.model_name }}</option>
+          </select>
+          <div *ngIf="submitted && Form.get('model_type')?.touched && Form.get('model_type')?.invalid" class="text-red-500 text-sm">
+            {{ 'model_type_required' | transloco }}
+          </div>
+        </div>
+      </div>
+  
+      <div class="rounded shadow flex items-center justify-center bg-white gap-2 py-2 px-2">
+        <button type="submit" class="w-full brand-button p-3 px-4 text-white rounded-lg">{{ 'go' | transloco }}</button>
+        <button type="button" (click)="resetForm()" class="w-full bg-rose-600 p-3 px-4 text-white rounded-lg">{{ 'reset' | transloco }}</button>
+      </div>
+       <div >
+      </div>
+  
+      <div class="col-span-2 flex justify-end">
+        <div   class="flex items-center justify-end md:w-1/4">
+          <button *ngIf="addModelStatus" (click)="opentAddModel()" type="button"
+            class="text-white bg-brandColor font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 ml-2">
+            <mat-icon svgIcon="heroicons_solid:plus" class="text-white"></mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <!-- Model Delete popup-->
+  <div *ngIf="DeletemodelPopup"
+    class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+    <div class="bg-white rounded w-full md:w-1/3 overflow-auto shadow-lg p-2">
+      <!-- modal header -->
+      <div class="flex items-center justify-between border-b px-4 py-2">
+        <h4 class="text-lg text-black font-semibold">
+          {{selectedModelname}}
+        </h4>
+      </div>
+      <!-- modal body -->
+      <div class="p-3 overflow-y-auto max-h-full">
+        <h1 class="text-lg font-semibold text-black mb-4">
+          {{ 'delete_model_confirmation' | transloco }}
+        </h1>
+        <div class="w-full flex items-center justify-center md:justify-start gap-5">
+          <button
+            class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest"
+            (click)="deleteModel()">
+            {{ 'delete' | transloco }}
+          </button>
+          <button
+            class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest"
+            (click)="closedeleteModel()">
+            {{ 'cancel' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-full rounded shadow bg-white py-2 px-2 mt-3">
+    <div class="w-full flex justify-between pl-4 md:pr-6 pr-4 py-2">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" [(ngModel)]="selectedAll" (change)="onSelectAllChange()"
+            class="bg-blue-950 h-4 w-4 cursor-pointer" />
+          {{ 'select_all' | transloco }}
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex items-center gap-2">
+          <button *ngIf="perDefectCount < TotalFilterDefectCount && !isLoading" type="button"
+            class="border border-gray-300 text-gray-600 font-semibold py-2 px-2 rounded flex items-center gap-1"
+            (click)="loadData()" [disabled]="isLoading">
+            {{ 'load_more' | transloco }} <mat-icon svgIcon="keyboard_arrow_down"></mat-icon>
+          </button>
+          <span>{{ 'defects' | transloco }}</span>
+          <input class="appearance-none border rounded w-24 py-3 px-3 text-gray-700 leading-tight focus:outline-none"
+            type="number" placeholder="0" value="{{ perDefectCount }}" readonly />
+          <span>{{ 'of' | transloco }} </span>
+          <span>{{
+            TotalFilterDefectCount ? TotalFilterDefectCount : "0"
+            }} </span>
+        </div>
+        <button *ngIf="trainModelStatus" (click)="openTrainModel()" class="brand-button text-white font-bold py-2 px-4 rounded">
+          <span class="hidden md:block">{{ 'train' | transloco }}</span>
+        </button>
+        <button (click)="deleteSelectedItems()" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">
+          {{ 'delete' | transloco }}
+        </button>
+      </div>
+    </div>
+    <div class="DefectContainer">
+      <div class="grid grid-cols-2 sm:grid-cols-5 2xl:grid-cols-5 px-4 py-2 gap-3">
+        <div class="rounded-lg overflow-hidden border" *ngFor="let defect of AllDefectsData">
+          <div class="DefectBox relative">
+            <div class="bg-brandColor rounded-md flex items-center gap-1 absolute left-3 top-3 w-fit px-2 z-20">
+              <mat-icon svgIcon="heroicons_solid:sparkles" class="text-yellow-300"></mat-icon>
+              <div class="bg-brandColor px-1">
+
+                <select
+                  class="bg-brandColor text-white text-sm   block w-full p-2.5 dark:placeholder-gray-400 dark:text-white "
+                  (change)="sendUserDefectSuggestion($event,defect.defect_id,defect.robro_roll_id)"
+                  [ngModel]="defect.user_suggestion ? defect.user_suggestion : (defect.ai_suggestion ? defect.ai_suggestion : '')">
+                  <option value="">{{ 'select' | transloco }}</option>
+                  <option *ngFor="let data of ai_suggestion_data" value="{{ data }}">
+                    {{data}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <img alt="defect image" class="h-48 object-cover" src="{{imagebasepath + defect.cropped_image_path}}" width="100%"
+              alt="" (click)="checboxchecked(defect.defect_id)" />
+            <label class="absolute right-0 top-0 mr-2 mt-2 z-10">
+              <input type="checkbox" class="bg-blue-950 h-4 w-4 cursor-pointer" (change)="onCheckboxChange(defect.defect_id,defect.robro_roll_id)"
+                [checked]="isChecked(item?.defect_id)" id="checkbox_{{ defect.defect_id }}" />
+            </label>
+          </div>
+          <div class="flex items-center w-full bg-brandColor border-b">
+            <div class="bg-brandColor p-2 w-full h-10 text-center">
+              <p class="font-bold text-base">
+                {{ defect.ai_suggestion
+                }}
+              </p>
+              <p *ngIf="defect.delete_status==1" class="font-bold text-base text-center">{{ 'delete' | transloco }}</p>
+              <p *ngIf="defect.merge_status==1" class="font-bold text-base text-center">{{ 'merge' | transloco }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal start -->
+<div *ngIf="startTrain"
+  class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+  <div class="bg-white rounded w-full md:w-1/5 overflow-auto shadow-lg">
+    <!-- modal header -->
+
+    <div *ngIf="comfirmation_model_status" class="p-3 overflow-y-auto max-h-full">
+      <div class="w-full mb-3">
+        <!-- <img src="../../../../assets/images/cards/checkmark.png" class="mx-auto mb-2 w-24 h-24 " alt=""> -->
+        <h4 class="text-2xl text-center font-semibold">{{ 'start_training_confirmation' | transloco }}</h4>
+      </div>
+
+      <div class="w-full flex items-center justify-center gap-5 pt-2">
+        <button (click)="startModelTraining('new','')"
+          class="brand-button font-semibold text-white py-2 px-4 border rounded tracking-widest">
+          {{ 'yes' | transloco }}
+        </button>
+        <button (click)="closeTrainModel()"
+          class="bg-transparent text-gray-600 font-semibold py-2 px-4 border border-gray-500 rounded tracking-widest">
+          {{ 'no' | transloco }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="progess_bar_status" class="relative overflow-y-auto min-h-32">
+      <div
+        class="flex bg-gray-200 border-t-r items-center justify-between p-2 py-3 border-b rounded-t dark:border-gray-600">
+        <h3 class="text-lg font-semibold text-slate-700 dark:text-white">
+          {{ 'training_under_progress' | transloco }}
+        </h3>
+        <button (click)="closeTrainModel()"
+          class="absolute top-3 right-2 text-gray-400 bg-white hover:bg-gray-200 hover:text-gray-900 rounded-md text-sm h-6 w-6 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <span class="material-icons">remove</span>
+        </button>
+      </div>
+      <div class="p-3">
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-3">
+          <div class="bg-blue-600 h-2.5 rounded-full" [style.width.%]="progress_value"></div>
+        </div>
+        <div class="w-full flex items-center justify-center">
+          <button (click)="interrupt_training()" class="bg-rose-500 text-white font-bold py-2 px-4 rounded mt-4">
+            {{ 'stop' | transloco }}
+          </button>
+        </div>
+      </div>
+
+
+
+
+    </div>
+
+  </div>
+</div>
+<!-- modal end -->
+<!-- merge pop-up end here -->
+<!-- modal start -->
+<form [formGroup]="ModelForm" (ngSubmit)="saveModel()">
+  <div *ngIf="addmodal && !(getLoaderState() | async)"
+    class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+    <div class="bg-white rounded w-full md:w-1/4 overflow-auto shadow-lg p-2">
+      <!-- modal header -->
+      <div class="flex items-center justify-between border-b px-4 py-2">
+        <h4 class="text-lg text-black font-semibold">{{ 'add_model' | transloco }}</h4>
+      </div>
+      <!-- modal body -->
+      <div class="p-3 overflow-y-auto max-h-full">
+        <div class="flex flex-col gap-1 pl-2 w-full mb-3">
+          <span class="font-bold text-base text-start text-blue">
+            {{ 'model_name' | transloco }}<span style="color: red;">*</span></span>
+          <input formControlName="model_id"
+            class="appearance-none border font-normal text-base rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+            type="text" placeholder="{{ 'model' | transloco }}" [ngClass]="{ 'is-invalid': model_submitted && f['model_id'].errors }" />
+          <div *ngIf=" f['model_id'].errors" class="invalid-feedback">
+            <div *ngIf="model_submitted && f['model_id'].errors['required']" class="text-red-600">{{ 'model_name_required' | transloco }}
+            </div>
+            <div *ngIf="f['model_id'].errors['duplicateModel']" class="text-red-600">{{ 'model_name_exists' | transloco }}</div>
+          </div>
+        </div>
+
+        <div class="w-full flex items-center justify-center pt-2">
+          <button type="submit" [disabled]="ModelForm.disabled"
+            class="brand-button font-semibold text-white py-2 px-4 border rounded tracking-widest m-2">
+            {{ 'save' | transloco }}
+          </button>
+          <button (click)="closeAddModel()"
+            class="bg-transparent font-semibold text-grey py-2 px-4 border rounded tracking-widest">
+            {{ 'cancel' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- no-checkbox-selected-for-delete-popup-start -->
+<div *ngIf="selectCheck"
+  class="modal h-screen w-full p-4 fixed z-20 left-0 top-0 flex justify-center items-center bg-black bg-opacity-50">
+  <div class="bg-white rounded w-full md:w-1/4 overflow-auto shadow-lg p-2 border border-gray-500">
+
+    <!-- modal header -->
+    <div class="flex flex-col items-center justify-between border-b px-4 py-2">
+      <div class="flex justify-center">
+        <i class="fas fa-info-circle text-blue-500 text-2xl"></i>
+      </div>
+    </div>
+    <!-- modal body -->
+    <div class="p-3 overflow-y-auto max-h-full">
+      <div class="flex flex-col items-center justify-between px-4 py-2">
+        <h4 class="text-xl text-black font-semibold">
+          {{ 'please_select_50_images' | transloco }}
+        </h4>
+      </div>
+
+      <div class="w-full flex items-center justify-center pt-2">
+        <button (click)="closeCheckbox()"
+          class="bg-rose-500 hover:bg-rose-600 font-semibold text-white py-2 px-4 border border-rose-500 hover:border-transparent rounded tracking-widest mt-1">
+          {{ 'ok' | transloco }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- no-checkbox-selected-for-delete-popup-end-->
+<!-- modal end -->
+<!-- merge pop-up end here -->
+<div *ngIf="getLoaderState() | async" class="loader-overlay">
+  <div class="loader-text">
+    <img src="assets/images/logo/logo.png" alt="Logo" class="loader-logo" />
+    <p class="mt-2 text-center">{{ 'please_wait' | transloco }}</p>
+  </div>
+</div>
